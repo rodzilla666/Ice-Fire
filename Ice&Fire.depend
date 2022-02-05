@@ -1,0 +1,14 @@
+# depslib dependency file v1.0
+1644093699 source:c:\users\eldar\documents\github\ice-fire\main.cpp
+	<tchar.h>
+	<windows.h>
+	<bits/stdc++.h>
+	"player.h"
+
+1644093571 source:c:\users\eldar\documents\github\ice-fire\player.cpp
+	"player.h"
+	<iostream>
+
+1644093752 c:\users\eldar\documents\github\ice-fire\player.h
+	<windows.h>
+
