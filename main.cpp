@@ -82,6 +82,8 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 {
     switch (message)                  /* handle the messages */
     {
+    case WM_CREATE:
+        printf("TEST");
         case WM_DESTROY:
             PostQuitMessage (0);       /* send a WM_QUIT to the message queue */
             break;
