@@ -1,6 +1,10 @@
 #pragma once
 #include <windows.h>
 #define FLOOR 16777215
+#define DARKWALL 2434867
+#define WALL 3685712
+#define LAVA 16391680
+#define WATER 1999615
 
 enum State { standing_right, standing_left, running_left, running_right, jumping_right, jumping_left };
 enum PlayerType { red, blue };

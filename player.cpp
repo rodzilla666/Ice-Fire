@@ -83,7 +83,7 @@ void Player::moveLeft(HDC hdc){
     setState(running_left);
     COLORREF colorNearFeet = GetPixel(hdc, x_pos, y_pos+5);
     COLORREF colorNearHead = GetPixel(hdc, x_pos, y_pos+height-5);
-    if(colorNearHead!=0 && colorNearFeet!=0)
+    if(colorNearHead!=WALL && colorNearFeet!=WALL && colorNearHead!=DARKWALL && colorNearFeet!=DARKWALL)
     {
         x_pos-=dx;
     }
@@ -94,7 +94,7 @@ void Player::moveRight(HDC hdc){
     setState(running_right);
     COLORREF colorNearFeet = GetPixel(hdc, x_pos+width, y_pos+5);
     COLORREF colorNearHead = GetPixel(hdc, x_pos+width, y_pos+height-5);
-    if(colorNearHead!=0 && colorNearFeet!=0)
+    if(colorNearHead!=WALL && colorNearFeet!=WALL && colorNearHead!=DARKWALL && colorNearFeet!=DARKWALL)
     {
         x_pos+=dx;
     }

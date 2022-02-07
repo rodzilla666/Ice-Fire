@@ -194,28 +194,28 @@ void CheckInput(HDC hdc)
     }
     else if(KEYDOWN(KEY_A))
     {
-        cout<<"A"<<endl;
+       // cout<<"A"<<endl;
         player.moveLeft(hdc);
     }
     else if(KEYDOWN(KEY_D))
     {
-        cout<<"D"<<endl;
+        //cout<<"D"<<endl;
         player.moveRight(hdc);
     }
     if(KEYDOWN(KEY_W))
     {
-        cout<<"W"<<endl;
+       // cout<<"W"<<endl;
         player.jump(hdc);
     }
 
     if(KEYDOWN(KEY_S))
     {
-        cout<<"S"<<endl;
+        //cout<<"S"<<endl;
         player.y_pos+=player.dy;
     }
     else if(KEYDOWN(VK_DOWN))
     {
-        cout<<"DOWN"<<endl;
+        //cout<<"DOWN"<<endl;
         player.gravityEnabled=!player.gravityEnabled;
         cout<<player.gravityEnabled<<endl;
     }
