@@ -26,7 +26,7 @@ void Player::update(HDC hdc){
     {
         for(int i=0; i<gravity; i++)
         {
-            COLORREF colorLeft = GetPixel(hdc, x_pos+width/4, y_pos+height);
+            COLORREF colorLeft = GetPixel(hdc, x_pos+width/4-13, y_pos+height);
             COLORREF colorRight = GetPixel(hdc, x_pos+2*(width/4), y_pos+height);
             COLORREF colorUnder = GetPixel(hdc, x_pos+3*(width/4), y_pos+height);
 
@@ -44,9 +44,17 @@ void Player::update(HDC hdc){
             COLORREF colorRight = GetPixel(hdc, x_pos+2*(width/4), y_pos);
             COLORREF colorAbove = GetPixel(hdc, x_pos+3*(width/4), y_pos);
 
-            if(colorLeft!=FLOOR && colorRight!=FLOOR && colorAbove!=FLOOR)
+            if(colorLeft!=FLOOR && colorRight!=FLOOR && colorAbove!=FLOOR &&
+               colorLeft!=WALL && colorRight!=WALL && colorAbove!=WALL &&
+               colorLeft!=DARKWALL && colorRight!=DARKWALL && colorAbove!=DARKWALL &&
+               colorLeft!=FLOORCREAM && colorRight!=FLOORCREAM && colorAbove!=FLOORCREAM)
             {
                 y_pos--;
+            }
+            else
+            {
+                jumping = 12;
+                break;
             }
         }
         jumping++;
@@ -83,17 +91,18 @@ void Player::moveLeft(HDC hdc){
     setState(running_left);
     for(int i=0; i<dx; i++)
     {
-        COLORREF color1 = GetPixel(hdc, x_pos+13, y_pos+5);
-        COLORREF color2 = GetPixel(hdc, x_pos+13, y_pos+height/6);
-        COLORREF color3 = GetPixel(hdc, x_pos+13, y_pos+height/3);
-        COLORREF color4 = GetPixel(hdc, x_pos+13, y_pos+height/2);
-        COLORREF color5 = GetPixel(hdc, x_pos+13, y_pos+4*height/6);
-        COLORREF color6 = GetPixel(hdc, x_pos+13, y_pos+5*height/6);
-        COLORREF color7 = GetPixel(hdc, x_pos+13, y_pos+height-5);
+        COLORREF color1 = GetPixel(hdc, x_pos, y_pos+5);
+        COLORREF color2 = GetPixel(hdc, x_pos, y_pos+height/6);
+        COLORREF color3 = GetPixel(hdc, x_pos, y_pos+height/3);
+        COLORREF color4 = GetPixel(hdc, x_pos, y_pos+height/2);
+        COLORREF color5 = GetPixel(hdc, x_pos, y_pos+4*height/6);
+        COLORREF color6 = GetPixel(hdc, x_pos, y_pos+5*height/6);
+        COLORREF color7 = GetPixel(hdc, x_pos, y_pos+height-5);
             std::cout << color1 << " " << color2 << " " << color3 << " " << color4 << " " << color5 << " " << color6 << " " << color7 << std::endl;
         if(color1!=WALL && color2!=WALL && color3!=WALL && color4!=WALL && color5!=WALL && color6!=WALL && color7!=WALL &&
            color1!=DARKWALL && color2!=DARKWALL && color3!=DARKWALL && color4!=DARKWALL && color5!=DARKWALL && color6!=DARKWALL && color7!=DARKWALL &&
-           color1!=FLOOR && color2!=FLOOR && color3!=FLOOR && color4!=FLOOR && color5!=FLOOR && color6!=FLOOR && color7!=FLOOR)
+           color1!=FLOOR && color2!=FLOOR && color3!=FLOOR && color4!=FLOOR && color5!=FLOOR && color6!=FLOOR && color7!=FLOOR &&
+           color1!=FLOORCREAM && color2!=FLOORCREAM && color3!=FLOORCREAM && color4!=FLOORCREAM && color5!=FLOORCREAM && color6!=FLOORCREAM && color7!=FLOORCREAM)
         {
             x_pos--;
         }
@@ -105,16 +114,17 @@ void Player::moveRight(HDC hdc){
     setState(running_right);
     for(int i=0; i<dx; i++)
     {
-        COLORREF color1 = GetPixel(hdc, x_pos+width-13, y_pos+5);
-        COLORREF color2 = GetPixel(hdc, x_pos+width-13, y_pos+height/6);
-        COLORREF color3 = GetPixel(hdc, x_pos+width-13, y_pos+height/3);
-        COLORREF color4 = GetPixel(hdc, x_pos+width-13, y_pos+height/2);
-        COLORREF color5 = GetPixel(hdc, x_pos+width-13, y_pos+4*height/6);
-        COLORREF color6 = GetPixel(hdc, x_pos+width-13, y_pos+5*height/6);
-        COLORREF color7 = GetPixel(hdc, x_pos+width-13, y_pos+height-5);
+        COLORREF color1 = GetPixel(hdc, x_pos+width-5, y_pos+5);
+        COLORREF color2 = GetPixel(hdc, x_pos+width-5, y_pos+height/6);
+        COLORREF color3 = GetPixel(hdc, x_pos+width-5, y_pos+height/3);
+        COLORREF color4 = GetPixel(hdc, x_pos+width-5, y_pos+height/2);
+        COLORREF color5 = GetPixel(hdc, x_pos+width-5, y_pos+4*height/6);
+        COLORREF color6 = GetPixel(hdc, x_pos+width-5, y_pos+5*height/6);
+        COLORREF color7 = GetPixel(hdc, x_pos+width-5, y_pos+height-5);
         if(color1!=WALL && color2!=WALL && color3!=WALL && color4!=WALL && color5!=WALL && color6!=WALL && color7!=WALL &&
            color1!=DARKWALL && color2!=DARKWALL && color3!=DARKWALL && color4!=DARKWALL && color5!=DARKWALL && color6!=DARKWALL && color7!=DARKWALL &&
-           color1!=FLOOR && color2!=FLOOR && color3!=FLOOR && color4!=FLOOR && color5!=FLOOR && color6!=FLOOR && color7!=FLOOR)
+           color1!=FLOOR && color2!=FLOOR && color3!=FLOOR && color4!=FLOOR && color5!=FLOOR && color6!=FLOOR && color7!=FLOOR &&
+           color1!=FLOORCREAM && color2!=FLOORCREAM && color3!=FLOORCREAM && color4!=FLOORCREAM && color5!=FLOORCREAM && color6!=FLOORCREAM && color7!=FLOORCREAM)
         {
             x_pos++;
         }
