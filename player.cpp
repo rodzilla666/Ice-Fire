@@ -38,7 +38,7 @@ void Player::update(HDC hdc){
     }
     else
     {
-        for(int i=0; i<8; i++)
+        for(int i=0; i<jumpVal[jumping]; i++)
         {
             COLORREF colorLeft = GetPixel(hdc, x_pos+width/4, y_pos);
             COLORREF colorRight = GetPixel(hdc, x_pos+2*(width/4), y_pos);
@@ -50,7 +50,7 @@ void Player::update(HDC hdc){
             }
         }
         jumping++;
-        if(jumping==10)
+        if(jumping==13)
         {
             jumping=0;
             if(lastState==running_right)
@@ -81,22 +81,43 @@ void Player::update(HDC hdc){
 
 void Player::moveLeft(HDC hdc){
     setState(running_left);
-    COLORREF colorNearFeet = GetPixel(hdc, x_pos, y_pos+5);
-    COLORREF colorNearHead = GetPixel(hdc, x_pos, y_pos+height-5);
-    if(colorNearHead!=WALL && colorNearFeet!=WALL && colorNearHead!=DARKWALL && colorNearFeet!=DARKWALL)
+    for(int i=0; i<dx; i++)
     {
-        x_pos-=dx;
+        COLORREF color1 = GetPixel(hdc, x_pos+13, y_pos+5);
+        COLORREF color2 = GetPixel(hdc, x_pos+13, y_pos+height/6);
+        COLORREF color3 = GetPixel(hdc, x_pos+13, y_pos+height/3);
+        COLORREF color4 = GetPixel(hdc, x_pos+13, y_pos+height/2);
+        COLORREF color5 = GetPixel(hdc, x_pos+13, y_pos+4*height/6);
+        COLORREF color6 = GetPixel(hdc, x_pos+13, y_pos+5*height/6);
+        COLORREF color7 = GetPixel(hdc, x_pos+13, y_pos+height-5);
+            std::cout << color1 << " " << color2 << " " << color3 << " " << color4 << " " << color5 << " " << color6 << " " << color7 << std::endl;
+        if(color1!=WALL && color2!=WALL && color3!=WALL && color4!=WALL && color5!=WALL && color6!=WALL && color7!=WALL &&
+           color1!=DARKWALL && color2!=DARKWALL && color3!=DARKWALL && color4!=DARKWALL && color5!=DARKWALL && color6!=DARKWALL && color7!=DARKWALL &&
+           color1!=FLOOR && color2!=FLOOR && color3!=FLOOR && color4!=FLOOR && color5!=FLOOR && color6!=FLOOR && color7!=FLOOR)
+        {
+            x_pos--;
+        }
     }
     lastState=running_left;
 }
 
 void Player::moveRight(HDC hdc){
     setState(running_right);
-    COLORREF colorNearFeet = GetPixel(hdc, x_pos+width, y_pos+5);
-    COLORREF colorNearHead = GetPixel(hdc, x_pos+width, y_pos+height-5);
-    if(colorNearHead!=WALL && colorNearFeet!=WALL && colorNearHead!=DARKWALL && colorNearFeet!=DARKWALL)
+    for(int i=0; i<dx; i++)
     {
-        x_pos+=dx;
+        COLORREF color1 = GetPixel(hdc, x_pos+width-13, y_pos+5);
+        COLORREF color2 = GetPixel(hdc, x_pos+width-13, y_pos+height/6);
+        COLORREF color3 = GetPixel(hdc, x_pos+width-13, y_pos+height/3);
+        COLORREF color4 = GetPixel(hdc, x_pos+width-13, y_pos+height/2);
+        COLORREF color5 = GetPixel(hdc, x_pos+width-13, y_pos+4*height/6);
+        COLORREF color6 = GetPixel(hdc, x_pos+width-13, y_pos+5*height/6);
+        COLORREF color7 = GetPixel(hdc, x_pos+width-13, y_pos+height-5);
+        if(color1!=WALL && color2!=WALL && color3!=WALL && color4!=WALL && color5!=WALL && color6!=WALL && color7!=WALL &&
+           color1!=DARKWALL && color2!=DARKWALL && color3!=DARKWALL && color4!=DARKWALL && color5!=DARKWALL && color6!=DARKWALL && color7!=DARKWALL &&
+           color1!=FLOOR && color2!=FLOOR && color3!=FLOOR && color4!=FLOOR && color5!=FLOOR && color6!=FLOOR && color7!=FLOOR)
+        {
+            x_pos++;
+        }
     }
     lastState=running_right;
 }

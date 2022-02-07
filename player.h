@@ -1,8 +1,9 @@
 #pragma once
 #include <windows.h>
+#include <vector>
 #define FLOOR 16777215
-#define DARKWALL 2434867
-#define WALL 3685712
+#define WALL 7500145
+#define DARKWALL 5258552
 #define LAVA 16391680
 #define WATER 1999615
 
@@ -27,6 +28,7 @@ public:
     PlayerType type;
     State state=standing_right;
     State lastState=running_right;
+    std::vector<int> jumpVal{20,18,16,13,10,7,5,4,4,3,3,2,1};
 
     Player(int x, int y, PlayerType t);
     Player();

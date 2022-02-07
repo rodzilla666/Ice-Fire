@@ -12,3 +12,17 @@
 1644232414 c:\users\eldar\documents\github\ice-fire\player.h
 	<windows.h>
 
+1644233120 source:c:\users\edonj\desktop\ice&fire\main.cpp
+	<tchar.h>
+	<windows.h>
+	<bits/stdc++.h>
+	"player.h"
+
+1644236943 c:\users\edonj\desktop\ice&fire\player.h
+	<windows.h>
+	<vector>
+
+1644237022 source:c:\users\edonj\desktop\ice&fire\player.cpp
+	"player.h"
+	<iostream>
+
