@@ -17,13 +17,29 @@ using namespace std;
 #define KEY_S 0x53
 #define KEY_W 0x57
 
+#define PLAYBUTTON 801
+#define LOGINBUTTON 802
+#define SETTINGSBUTTON 803
+#define LEADERBOARDBUTTON 804
+#define EXITBUTTON 805
+
 void CheckInput(HDC);
 void Update(HWND);
 void Render(HWND);
-void Initalize(void);
+void Initalize(HWND);
+void InitializeLevel(HWND);
 
 void Update(RECT*);
 void Draw(HDC, RECT*);
+
+bool mainMenuActive = true;
+bool mainMenuRendered = false;
+
+HBITMAP playButtonImage;
+HBITMAP loginButtonImage;
+HBITMAP settingsButtonImage;
+HBITMAP leaderboardButtonImage;
+HBITMAP exitButtonImage;
 
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
@@ -89,7 +105,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
 
     ShowWindow (hwnd, nCmdShow);
 
-    Initalize();
+    Initalize(hwnd);
 
     while (TRUE)
     {
@@ -111,8 +127,15 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
         CheckInput(hdc);
         ReleaseDC(hwnd, hdc);
 
-        Update(hwnd);
-        Render(hwnd);
+        if(!mainMenuActive)
+        {
+            Update(hwnd);
+        }
+        if((mainMenuActive && !mainMenuRendered) || !mainMenuActive)
+        {
+            Render(hwnd);
+            mainMenuRendered = mainMenuActive;
+        }
 
         while(GetTickCount()- vrijeme_pocetak < 20)
         {
@@ -139,6 +162,42 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         KillTimer(hwnd, ID_TIMER);
         PostQuitMessage (0);
         break;
+        case WM_COMMAND:
+        {
+            switch(LOWORD(wParam))
+            {
+                case PLAYBUTTON:
+                {
+                    std::cout << "PLAY button pressed" << std::endl;
+                    InitializeLevel(hwnd);
+                    mainMenuActive = false;
+                    mainMenuRendered = false;
+                }
+                break;
+                case LOGINBUTTON:
+                {
+                    std::cout << "LOGIN button pressed" << std::endl;
+                }
+                break;
+                case SETTINGSBUTTON:
+                {
+                    std::cout << "SETTINGS button pressed" << std::endl;
+                }
+                break;
+                case LEADERBOARDBUTTON:
+                {
+                    std::cout << "LEADERBOARD button pressed" << std::endl;
+                }
+                break;
+                case EXITBUTTON:
+                {
+                    std::cout << "EXIT button pressed" << std::endl;
+                    PostQuitMessage(0);
+                }
+                break;
+
+            }
+        }
     default:
         return DefWindowProc (hwnd, message, wParam, lParam);
     }
@@ -164,18 +223,20 @@ void Draw(HDC hdc, RECT* rect)
 
     HBITMAP hbmOld;
 
-    SelectObject(hdcMem, boy.hbmMask);
-    BitBlt(hdcBuffer, boy.x_pos, boy.y_pos, boy.width, boy.height, hdcMem, boy.x_animation*boy.width, boy.y_animation*boy.height, SRCAND);
+    if(!mainMenuActive)
+    {
+        SelectObject(hdcMem, boy.hbmMask);
+        BitBlt(hdcBuffer, boy.x_pos, boy.y_pos, boy.width, boy.height, hdcMem, boy.x_animation*boy.width, boy.y_animation*boy.height, SRCAND);
 
-    hbmOld = (HBITMAP) SelectObject(hdcMem, boy.hbm);
-    BitBlt(hdcBuffer, boy.x_pos, boy.y_pos, boy.width, boy.height, hdcMem, boy.x_animation*boy.width, boy.y_animation*boy.height, SRCPAINT);
+        hbmOld = (HBITMAP) SelectObject(hdcMem, boy.hbm);
+        BitBlt(hdcBuffer, boy.x_pos, boy.y_pos, boy.width, boy.height, hdcMem, boy.x_animation*boy.width, boy.y_animation*boy.height, SRCPAINT);
 
-    SelectObject(hdcMem, girl.hbmMask);
-    BitBlt(hdcBuffer, girl.x_pos, girl.y_pos, girl.width, girl.height, hdcMem, girl.x_animation*girl.width, girl.y_animation*girl.height, SRCAND);
+        SelectObject(hdcMem, girl.hbmMask);
+        BitBlt(hdcBuffer, girl.x_pos, girl.y_pos, girl.width, girl.height, hdcMem, girl.x_animation*girl.width, girl.y_animation*girl.height, SRCAND);
 
-    hbmOld = (HBITMAP) SelectObject(hdcMem, girl.hbm);
-    BitBlt(hdcBuffer, girl.x_pos, girl.y_pos, girl.width, girl.height, hdcMem, girl.x_animation*girl.width, girl.y_animation*girl.height, SRCPAINT);
-
+        hbmOld = (HBITMAP) SelectObject(hdcMem, girl.hbm);
+        BitBlt(hdcBuffer, girl.x_pos, girl.y_pos, girl.width, girl.height, hdcMem, girl.x_animation*girl.width, girl.y_animation*girl.height, SRCPAINT);
+    }
     BitBlt(hdc, 0,0, rect->right, rect->bottom, hdcBuffer, 0,0, SRCCOPY);
 
     SelectObject(hdcMem, hbmOld);
@@ -246,14 +307,42 @@ void CheckInput(HDC hdc)
     }
 }
 
-void Initalize(void)
+void Initalize(HWND hwnd)
+{
+    hbmBackground = (HBITMAP) LoadImage(NULL, "Resources\\Menus\\StartMenu.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    BITMAP bitmap;
+    GetObject(hbmBackground, sizeof(BITMAP), &bitmap);
+    background.width = bitmap.bmWidth;
+    background.height=bitmap.bmHeight;
+
+    playButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\PlayButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
+    HWND playButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 179, 275, 70, hwnd, (HMENU)PLAYBUTTON, NULL, NULL);
+    SendMessageW(playButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)playButtonImage);
+
+    loginButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\LoginButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
+    HWND loginButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 251, 275, 70, hwnd, (HMENU)LOGINBUTTON, NULL, NULL);
+    SendMessageW(loginButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)loginButtonImage);
+
+    settingsButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\SettingsButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
+    HWND settingsButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 327, 275, 70, hwnd, (HMENU)SETTINGSBUTTON, NULL, NULL);
+    SendMessageW(settingsButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)settingsButtonImage);
+
+    leaderboardButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\LeaderboardButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
+    HWND leaderboardButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 403, 275, 70, hwnd, (HMENU)LEADERBOARDBUTTON, NULL, NULL);
+    SendMessageW(leaderboardButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)leaderboardButtonImage);
+
+    exitButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\ExitButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
+    HWND exitButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 479, 275, 70, hwnd, (HMENU)EXITBUTTON, NULL, NULL);
+    SendMessageW(exitButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)exitButtonImage);
+}
+
+void InitializeLevel(HWND hwnd)
 {
     hbmBackground = (HBITMAP) LoadImage(NULL, "Resources\\Levels\\level1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
     BITMAP bitmap;
     GetObject(hbmBackground, sizeof(BITMAP), &bitmap);
     background.width = bitmap.bmWidth;
     background.height=bitmap.bmHeight;
-
 }
 
 void Update(HWND hwnd)
