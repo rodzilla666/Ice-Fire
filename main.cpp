@@ -31,7 +31,8 @@ TCHAR szClassName[ ] = _T("CodeBlocksWindowsApp");
 
 HBITMAP hbmBackground;
 
-Player player(400, 250, red);
+Player boy(100, 50, blue);
+Player girl(50, 50, red);
 
 struct Object{
     int width;
@@ -163,11 +164,17 @@ void Draw(HDC hdc, RECT* rect)
 
     HBITMAP hbmOld;
 
-    SelectObject(hdcMem, player.hbmMask);
-    BitBlt(hdcBuffer, player.x_pos, player.y_pos, player.width, player.height, hdcMem, player.x_animation*player.width, player.y_animation*player.height, SRCAND);
+    SelectObject(hdcMem, boy.hbmMask);
+    BitBlt(hdcBuffer, boy.x_pos, boy.y_pos, boy.width, boy.height, hdcMem, boy.x_animation*boy.width, boy.y_animation*boy.height, SRCAND);
 
-    hbmOld = (HBITMAP) SelectObject(hdcMem, player.hbm);
-    BitBlt(hdcBuffer, player.x_pos, player.y_pos, player.width, player.height, hdcMem, player.x_animation*player.width, player.y_animation*player.height, SRCPAINT);
+    hbmOld = (HBITMAP) SelectObject(hdcMem, boy.hbm);
+    BitBlt(hdcBuffer, boy.x_pos, boy.y_pos, boy.width, boy.height, hdcMem, boy.x_animation*boy.width, boy.y_animation*boy.height, SRCPAINT);
+
+    SelectObject(hdcMem, girl.hbmMask);
+    BitBlt(hdcBuffer, girl.x_pos, girl.y_pos, girl.width, girl.height, hdcMem, girl.x_animation*girl.width, girl.y_animation*girl.height, SRCAND);
+
+    hbmOld = (HBITMAP) SelectObject(hdcMem, girl.hbm);
+    BitBlt(hdcBuffer, girl.x_pos, girl.y_pos, girl.width, girl.height, hdcMem, girl.x_animation*girl.width, girl.y_animation*girl.height, SRCPAINT);
 
     BitBlt(hdc, 0,0, rect->right, rect->bottom, hdcBuffer, 0,0, SRCCOPY);
 
@@ -184,44 +191,60 @@ void CheckInput(HDC hdc)
 {
     if(!KEYDOWN(KEY_A) && !KEYDOWN(KEY_D) && !KEYDOWN(KEY_W))
     {
-        if(!player.isJumping())
+        if(!boy.isJumping() && boy.state!=dead_right)
         {
-            if(player.lastState==running_right)
-                player.setState(standing_right);
+            if(boy.lastState==running_right)
+                boy.setState(standing_right);
             else
-                player.setState(standing_left);
+                boy.setState(standing_left);
         }
     }
     else if(KEYDOWN(KEY_A))
     {
-       // cout<<"A"<<endl;
-        player.moveLeft(hdc);
+        boy.moveLeft(hdc);
     }
     else if(KEYDOWN(KEY_D))
     {
-        //cout<<"D"<<endl;
-        player.moveRight(hdc);
+        boy.moveRight(hdc);
     }
     if(KEYDOWN(KEY_W))
     {
-       // cout<<"W"<<endl;
-        player.jump(hdc);
+        boy.jump(hdc);
     }
-
     if(KEYDOWN(KEY_S))
     {
-        //cout<<"S"<<endl;
-        player.y_pos+=player.dy;
+        boy.setState(standing_right);
     }
-    else if(KEYDOWN(VK_DOWN))
+
+
+    if(!KEYDOWN(VK_UP) && !KEYDOWN(VK_LEFT) && !KEYDOWN(VK_RIGHT))
     {
-        //cout<<"DOWN"<<endl;
-        player.gravityEnabled=!player.gravityEnabled;
-        cout<<player.gravityEnabled<<endl;
+        if(!girl.isJumping() && girl.state!=dead_right)
+        {
+            if(girl.lastState==running_right)
+                girl.setState(standing_right);
+            else
+                girl.setState(standing_left);
+        }
+    }
+    else if(KEYDOWN(VK_LEFT))
+    {
+        girl.moveLeft(hdc);
+    }
+    else if(KEYDOWN(VK_RIGHT))
+    {
+        girl.moveRight(hdc);
+    }
+    if(KEYDOWN(VK_UP))
+    {
+        girl.jump(hdc);
+    }
+
+    if(KEYDOWN(VK_DOWN))
+    {
+        girl.setState(standing_right);
     }
 }
-
-
 
 void Initalize(void)
 {
@@ -240,7 +263,8 @@ void Update(HWND hwnd)
     Update(&clientRect);
 
     HDC hdc = GetDC(hwnd);
-    player.update(hdc);
+    boy.update(hdc);
+    girl.update(hdc);
     ReleaseDC(hwnd, hdc);
 }
 

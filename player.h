@@ -4,11 +4,11 @@
 #define FLOOR 16777215
 #define WALL 7500145
 #define DARKWALL 5258552
-#define LAVA 7930
+#define LAVA 8168
 #define WATER 16352555
 #define FLOORCREAM 12305875
-
-enum State { standing_right, standing_left, running_left, running_right, jumping_right, jumping_left };
+enum State { standing_right, standing_left, running_left,
+                running_right, jumping_right, jumping_left, dead_right, dead_left };
 enum PlayerType { red, blue };
 
 class Player{
