@@ -11,12 +11,11 @@
 
 using namespace std;
 
-#define PRITISNUTO(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
+#define KEYDOWN(vk_code) ((GetKeyState(vk_code) & 0x8000) ? 1 : 0)
 #define KEY_A 0x41
 #define KEY_D 0x44
 #define KEY_S 0x53
 #define KEY_W 0x57
-
 
 void CheckInput(HDC);
 void Update(HWND);
@@ -28,12 +27,11 @@ void Draw(HDC, RECT*);
 
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
-/*  Make the class name into a global variable  */
 TCHAR szClassName[ ] = _T("CodeBlocksWindowsApp");
 
 HBITMAP hbmBackground;
 
-Player player;
+Player player(400, 250, red);
 
 struct Object{
     int width;
@@ -70,11 +68,9 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     /* Use Windows's default colour as the background of the window */
     wincl.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
 
-    /* Register the window class, and if it fails quit the program */
     if (!RegisterClassEx (&wincl))
         return 0;
 
-    /* The class is registered, let's create the program*/
     hwnd = CreateWindowEx (
            0,                   /* Extended possibilites for variation */
            szClassName,         /* Classname */
@@ -82,15 +78,14 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
            WS_OVERLAPPEDWINDOW, /* default window */
            CW_USEDEFAULT,       /* Windows decides the position */
            CW_USEDEFAULT,       /* where the window ends up on the screen */
-           1500,                 /* The programs width */
-           800,                 /* and height in pixels */
+           1016,                 /* The programs width */
+           738,                 /* and height in pixels */
            HWND_DESKTOP,        /* The window is a child-window to desktop */
            NULL,                /* No menu */
            hThisInstance,       /* Program Instance handler */
            NULL                 /* No Window Creation data */
            );
 
-    /* Make the window visible on the screen */
     ShowWindow (hwnd, nCmdShow);
 
     Initalize();
@@ -123,11 +118,8 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
             Sleep(5);
         }
     }
-    /* The program return-value is 0 - The value that PostQuitMessage() gave */
     return messages.wParam;
 }
-
-/*  This function is called by the Windows function DispatchMessage()  */
 
 LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -171,22 +163,6 @@ void Draw(HDC hdc, RECT* rect)
 
     HBITMAP hbmOld;
 
-    player.x_animation++;
-    if(player.x_animation==5)
-    {
-        player.y_animation++;
-        if(player.y_animation == 6)
-        {
-            player.y_animation=0;
-        }
-        player.x_animation=0;
-    }
-    if(player.x_animation==4 && player.y_animation==5)
-    {
-        player.x_animation=0;
-        player.y_animation=0;
-    }
-
     SelectObject(hdcMem, player.hbmMask);
     BitBlt(hdcBuffer, player.x_pos, player.y_pos, player.width, player.height, hdcMem, player.x_animation*player.width, player.y_animation*player.height, SRCAND);
 
@@ -206,27 +182,38 @@ void Draw(HDC hdc, RECT* rect)
 
 void CheckInput(HDC hdc)
 {
-    if(PRITISNUTO(KEY_A))
+    if(!KEYDOWN(KEY_A) && !KEYDOWN(KEY_D) && !KEYDOWN(KEY_W))
+    {
+        if(!player.isJumping())
+        {
+            if(player.lastState==running_right)
+                player.setState(standing_right);
+            else
+                player.setState(standing_left);
+        }
+    }
+    else if(KEYDOWN(KEY_A))
     {
         cout<<"A"<<endl;
         player.moveLeft(hdc);
     }
-    else if(PRITISNUTO(KEY_D))
+    else if(KEYDOWN(KEY_D))
     {
         cout<<"D"<<endl;
         player.moveRight(hdc);
     }
-    else if(PRITISNUTO(KEY_W))
+    if(KEYDOWN(KEY_W))
     {
         cout<<"W"<<endl;
-        player.y_pos-=player.dy;
+        player.jump(hdc);
     }
-    else if(PRITISNUTO(KEY_S))
+
+    if(KEYDOWN(KEY_S))
     {
         cout<<"S"<<endl;
         player.y_pos+=player.dy;
     }
-    else if(PRITISNUTO(VK_DOWN))
+    else if(KEYDOWN(VK_DOWN))
     {
         cout<<"DOWN"<<endl;
         player.gravityEnabled=!player.gravityEnabled;
@@ -238,19 +225,8 @@ void CheckInput(HDC hdc)
 
 void Initalize(void)
 {
-    hbmBackground = (HBITMAP) LoadImage(NULL, "Resources\\Sprites\\testFloor.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-    player.hbm = (HBITMAP) LoadImage(NULL, "Resources\\Sprites\\walkingBlackSmallRight.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-    player.hbmMask = (HBITMAP) LoadImage(NULL, "Resources\\Sprites\\walkingWhiteSmallRight.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-
+    hbmBackground = (HBITMAP) LoadImage(NULL, "Resources\\Levels\\level1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
     BITMAP bitmap;
-    GetObject(player.hbm, sizeof(BITMAP), &bitmap);
-
-    player.width=bitmap.bmWidth/5;
-    player.height=bitmap.bmHeight/6;
-    player.x_pos=400;
-    player.y_pos=250;
-    player.type=red;
-
     GetObject(hbmBackground, sizeof(BITMAP), &bitmap);
     background.width = bitmap.bmWidth;
     background.height=bitmap.bmHeight;

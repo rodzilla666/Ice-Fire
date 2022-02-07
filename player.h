@@ -1,6 +1,8 @@
 #pragma once
 #include <windows.h>
-enum State { standing, running_left, running_right, jumping };
+#define FLOOR 16777215
+
+enum State { standing_right, standing_left, running_left, running_right, jumping_right, jumping_left };
 enum PlayerType { red, blue };
 
 class Player{
@@ -15,15 +17,19 @@ public:
     int height;
     int x_animation=0;
     int y_animation=0;
-    bool gravityEnabled=false;
+    bool gravityEnabled=true;
     int gravity=8;
+    int jumping=0;
     PlayerType type;
-    State state=standing;
+    State state=standing_right;
+    State lastState=running_right;
 
-    Player(int w, int h, int x, int y, PlayerType t);
+    Player(int x, int y, PlayerType t);
     Player();
     void update(HDC hdc); // animation, gravity
     void moveLeft(HDC hdc);
     void moveRight(HDC hdc);
-    void jump();
+    void jump(HDC hdc);
+    bool isJumping();
+    void setState(State s);
 };
