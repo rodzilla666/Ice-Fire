@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <iostream>
 #include "player.h"
+#include "floatingBlock.h"
 
 using namespace std;
 
@@ -67,6 +68,7 @@ HBITMAP hbmBackground;
 
 Player boy(100, 50, blue);
 Player girl(50, 50, red);
+Block goodBlock(400, 100, good);
 
 struct Object{
     int width;
@@ -313,6 +315,20 @@ void Draw(HDC hdc, RECT* rect)
 
         hbmOld = (HBITMAP) SelectObject(hdcMem, girl.hbm);
         BitBlt(hdcBuffer, girl.x_pos, girl.y_pos, girl.width, girl.height, hdcMem, girl.x_animation*girl.width, girl.y_animation*girl.height, SRCPAINT);
+
+        if(goodBlock.x_pos < 400)
+        {
+            goodBlock.dx = 1;
+        }
+        else if(goodBlock.x_pos > 490)
+        {
+            goodBlock.dx = -1;
+        }
+        SelectObject(hdcMem, goodBlock.hbmMask);
+        BitBlt(hdcBuffer, goodBlock.x_pos+=goodBlock.dx, goodBlock.y_pos, goodBlock.width, goodBlock.height, hdcMem, 0, 0, SRCAND);
+
+        hbmOld = (HBITMAP) SelectObject(hdcMem, goodBlock.hbm);
+        BitBlt(hdcBuffer, goodBlock.x_pos+=goodBlock.dx, goodBlock.y_pos, goodBlock.width, goodBlock.height, hdcMem, 0, 0, SRCPAINT);
     }
     BitBlt(hdc, 0,0, rect->right, rect->bottom, hdcBuffer, 0,0, SRCCOPY);
 
