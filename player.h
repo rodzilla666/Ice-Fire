@@ -2,14 +2,19 @@
 #include <windows.h>
 #include <vector>
 #define FLOOR 16777215
-#define WALL 7500145
-#define DARKWALL 5258552
+#define WALL 0
 #define LAVA 8168
 #define WATER 16352555
-#define FLOORCREAM 12305875
-enum State { standing_right, standing_left, running_left,
-                running_right, jumping_right, jumping_left, dead_right, dead_left };
+enum State { standing_right=0, standing_left, jumping_right,
+                jumping_left, running_right, running_left, dead_right, dead_left };
 enum PlayerType { red, blue };
+
+struct Sprite {
+    HBITMAP hbm;
+    HBITMAP hbmMask;
+    Sprite(HBITMAP h, HBITMAP m) : hbm{ h }, hbmMask{m} {}
+    Sprite(){}
+};
 
 class Player{
 public:
@@ -30,6 +35,7 @@ public:
     State state=standing_right;
     State lastState=running_right;
     std::vector<int> jumpVal{20,18,16,13,10,7,5,4,4,3,3,2,1};
+    std::vector<Sprite> states{7};
 
     Player(int x, int y, PlayerType t);
     Player();
