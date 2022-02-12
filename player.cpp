@@ -7,52 +7,52 @@ Player::Player(int x, int y, PlayerType t) {
     y_pos = y;
     type = t;
     setState(standing_right);
-    if (type == red) 
+    if (type == red)
     {
-        states[0].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_standing_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[0].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_standing_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[0].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_standing_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[0].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_standing_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[1].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_standing_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[1].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_standing_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[1].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_standing_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[1].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_standing_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[2].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_jumping_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[2].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_jumping_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[2].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_jumping_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[2].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_jumping_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[3].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_jumping_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[3].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_jumping_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[3].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_jumping_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[3].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_jumping_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[4].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_running_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[4].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_running_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[4].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_running_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[4].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_running_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[5].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_running_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[5].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_running_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[5].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_running_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[5].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_running_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[6].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_dead_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[6].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\girl_dead_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[6].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_dead_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[6].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\girl_dead_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
     }
     else
     {
-        states[0].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_standing_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[0].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_standing_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[0].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_standing_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[0].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_standing_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[1].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_standing_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[1].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_standing_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[1].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_standing_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[1].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_standing_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[2].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_jumping_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[2].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_jumping_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[2].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_jumping_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[2].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_jumping_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[3].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_jumping_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[3].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_jumping_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[3].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_jumping_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[3].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_jumping_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[4].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_running_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[4].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_running_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[4].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_running_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[4].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_running_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[5].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_running_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[5].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_running_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[5].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_running_left_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[5].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_running_left_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-        states[6].hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_dead_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        states[6].hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\boy_dead_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[6].hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_dead_right_black.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        states[6].hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\boy_dead_right_white.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
     }
 }
 
@@ -159,7 +159,7 @@ void Player::moveLeft(HDC hdc){
         COLORREF color6 = GetPixel(hdc, x_pos, y_pos+5*height/6);
         COLORREF color7 = GetPixel(hdc, x_pos, y_pos+height-5);
             //std::cout << color1 << " " << color2 << " " << color3 << " " << color4 << " " << color5 << " " << color6 << " " << color7 << std::endl;
-        if(color1!=WALL && color2!=WALL && color3!=WALL && color4!=WALL && color5!=WALL && color6!=WALL && color7!=WALL && 
+        if(color1!=WALL && color2!=WALL && color3!=WALL && color4!=WALL && color5!=WALL && color6!=WALL && color7!=WALL &&
            color1!=FLOOR && color2!=FLOOR && color3!=FLOOR && color4!=FLOOR && color5!=FLOOR && color6!=FLOOR && color7!=FLOOR)
         {
             x_pos--;

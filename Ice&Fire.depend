@@ -13,17 +13,17 @@
 	<windows.h>
 	<vector>
 
-1644334281 source:c:\users\edonj\desktop\ice&fire\main.cpp
+1644679965 source:c:\users\edonj\desktop\ice&fire\main.cpp
 	<tchar.h>
 	<windows.h>
-	<bits/stdc++.h>
+	<iostream>
 	"player.h"
 
-1644271742 c:\users\edonj\desktop\ice&fire\player.h
+1644678633 c:\users\edonj\desktop\ice&fire\player.h
 	<windows.h>
 	<vector>
 
-1644271742 source:c:\users\edonj\desktop\ice&fire\player.cpp
+1644678832 source:c:\users\edonj\desktop\ice&fire\player.cpp
 	"player.h"
 	<iostream>
 

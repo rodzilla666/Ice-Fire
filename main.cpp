@@ -38,6 +38,7 @@ void ResetLevelParameters(void);
 
 bool mainMenuActive = true;
 bool mainMenuRendered = false;
+bool mainMenuInitialized = false;
 bool gameOverMenuActive = false;
 bool gameOverMenuRendered = false;
 
@@ -50,6 +51,11 @@ HBITMAP playAgainButtonImage;
 HBITMAP mainMenuButtonImage;
 
 HWND hwndGameOverWindow;
+HWND playButton;
+HWND loginButton;
+HWND settingsButton;
+HWND leaderboardButton;
+HWND exitButton;
 
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK WindowProcedureGameOverWindow (HWND, UINT, WPARAM, LPARAM);
@@ -104,7 +110,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
         return 0;
 
     wincl.lpfnWndProc = WindowProcedureGameOverWindow;
-    wincl.lpszClassName = L"GameOverWindow";
+    wincl.lpszClassName = "GameOverWindow";
 
     if (!RegisterClassEx (&wincl))
         return 0;
@@ -126,7 +132,11 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
 
     ShowWindow (hwnd, nCmdShow);
 
-    Initalize(hwnd);
+    if(!mainMenuInitialized)
+    {
+        Initalize(hwnd);
+        mainMenuInitialized = true;
+    }
 
     mainHWND = hwnd;
 
@@ -145,7 +155,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
         }
 
         vrijeme_pocetak = GetTickCount();
-        /*
+
         if((boy.state == dead_left || boy.state == dead_right || girl.state == dead_left || girl.state == dead_right) && !gameOverMenuActive)
         {
             gameOverMenuActive = true;
@@ -165,14 +175,14 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
             mainMenuRendered = mainMenuActive;
             gameOverMenuRendered = gameOverMenuActive;
         }
-        */
+
         //cout << GetTickCount() - vrijeme_pocetak << endl;
 
-        HDC hdc = GetDC(hwnd);
+        /*HDC hdc = GetDC(hwnd);
         CheckInput(hdc);
         ReleaseDC(hwnd, hdc);
         Update(hwnd);
-        Render(hwnd);
+        Render(hwnd);*/
 
         while(GetTickCount()- vrijeme_pocetak < 20)
         {
@@ -209,6 +219,11 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                     InitializeLevel();
                     mainMenuActive = false;
                     mainMenuRendered = false;
+                    DestroyWindow(playButton);
+                    DestroyWindow(loginButton);
+                    DestroyWindow(settingsButton);
+                    DestroyWindow(leaderboardButton);
+                    DestroyWindow(exitButton);
                 }
                 break;
                 case LOGINBUTTON:
@@ -297,8 +312,8 @@ void Draw(HDC hdc, RECT* rect)
 
     HBITMAP hbmOld=0;
 
-    //if(!mainMenuActive && !gameOverMenuActive)
-    //{
+    if(!mainMenuActive && !gameOverMenuActive)
+    {
         SelectObject(hdcMem, boy.hbmMask);
         BitBlt(hdcBuffer, boy.x_pos, boy.y_pos, boy.width, boy.height, hdcMem, boy.x_animation*boy.width, boy.y_animation*boy.height, SRCAND);
 
@@ -310,7 +325,7 @@ void Draw(HDC hdc, RECT* rect)
 
         hbmOld = (HBITMAP) SelectObject(hdcMem, girl.hbm);
         BitBlt(hdcBuffer, girl.x_pos, girl.y_pos, girl.width, girl.height, hdcMem, girl.x_animation*girl.width, girl.y_animation*girl.height, SRCPAINT);
-    //}
+    }
     BitBlt(hdc, 0,0, rect->right, rect->bottom, hdcBuffer, 0,0, SRCCOPY);
 
     SelectObject(hdcMem, hbmOld);
@@ -383,38 +398,36 @@ void CheckInput(HDC hdc)
 
 void Initalize(HWND hwnd)
 {
-    hbmBackground = (HBITMAP) LoadImage(NULL, L"Resources\\Menus\\StartMenu.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    hbmBackground = (HBITMAP) LoadImage(NULL, "Resources\\Menus\\StartMenu.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
     BITMAP bitmap;
     GetObject(hbmBackground, sizeof(BITMAP), &bitmap);
     background.width = bitmap.bmWidth;
     background.height=bitmap.bmHeight;
-    /*
+
     playButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\PlayButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
-    HWND playButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 179, 275, 70, hwnd, (HMENU)PLAYBUTTON, NULL, NULL);
+    playButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 179, 275, 70, hwnd, (HMENU)PLAYBUTTON, NULL, NULL);
     SendMessageW(playButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)playButtonImage);
 
     loginButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\LoginButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
-    HWND loginButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 251, 275, 70, hwnd, (HMENU)LOGINBUTTON, NULL, NULL);
+    loginButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 251, 275, 70, hwnd, (HMENU)LOGINBUTTON, NULL, NULL);
     SendMessageW(loginButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)loginButtonImage);
 
     settingsButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\SettingsButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
-    HWND settingsButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 327, 275, 70, hwnd, (HMENU)SETTINGSBUTTON, NULL, NULL);
+    settingsButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 327, 275, 70, hwnd, (HMENU)SETTINGSBUTTON, NULL, NULL);
     SendMessageW(settingsButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)settingsButtonImage);
 
     leaderboardButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\LeaderboardButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
-    HWND leaderboardButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 403, 275, 70, hwnd, (HMENU)LEADERBOARDBUTTON, NULL, NULL);
+    leaderboardButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 403, 275, 70, hwnd, (HMENU)LEADERBOARDBUTTON, NULL, NULL);
     SendMessageW(leaderboardButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)leaderboardButtonImage);
 
     exitButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\ExitButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
-    HWND exitButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 479, 275, 70, hwnd, (HMENU)EXITBUTTON, NULL, NULL);
+    exitButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 479, 275, 70, hwnd, (HMENU)EXITBUTTON, NULL, NULL);
     SendMessageW(exitButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)exitButtonImage);
-    */
-    InitializeLevel();
 }
 
 void InitializeLevel()
 {
-    hbmBackground = (HBITMAP) LoadImage(NULL, L"Resources\\Levels\\level1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    hbmBackground = (HBITMAP) LoadImage(NULL, "Resources\\Levels\\level1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
     BITMAP bitmap;
     GetObject(hbmBackground, sizeof(BITMAP), &bitmap);
     background.width = bitmap.bmWidth;
@@ -425,13 +438,13 @@ HWND ShowGameOverScreen(HWND hwnd)
 {
     std::cout << "treba se pojavit game over preko ovog trenutnog prozora" << std::endl;
 
-    hbmBackground = (HBITMAP) LoadImage(NULL, L"Resources\\Menus\\GameOver.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    hbmBackground = (HBITMAP) LoadImage(NULL, "Resources\\Menus\\GameOver.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
     BITMAP bitmap;
     GetObject(hbmBackground, sizeof(BITMAP), &bitmap);
     background.width = bitmap.bmWidth;
     background.height=bitmap.bmHeight;
 
-    HWND hwndSecondWindow = CreateWindowEx (0, L"GameOverWindow",NULL,WS_ACTIVECAPTION,315,200,603,430,hwnd,NULL,(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE),NULL);
+    HWND hwndSecondWindow = CreateWindowEx (0, "GameOverWindow",NULL,WS_ACTIVECAPTION,315,200,603,430,hwnd,NULL,(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE),NULL);
 
     ShowWindow (hwndSecondWindow, SW_SHOWNORMAL);
 
