@@ -1,15 +1,16 @@
 # depslib dependency file v1.0
-1644265185 source:c:\users\eldar\documents\github\ice-fire\main.cpp
+1644714100 source:c:\users\eldar\documents\github\ice-fire\main.cpp
 	<tchar.h>
 	<windows.h>
-	<bits/stdc++.h>
+	<iostream>
 	"player.h"
+	"floatingBlock.h"
 
-1644269137 source:c:\users\eldar\documents\github\ice-fire\player.cpp
+1644713462 source:c:\users\eldar\documents\github\ice-fire\player.cpp
 	"player.h"
 	<iostream>
 
-1644260600 c:\users\eldar\documents\github\ice-fire\player.h
+1644666634 c:\users\eldar\documents\github\ice-fire\player.h
 	<windows.h>
 	<vector>
 
@@ -33,6 +34,14 @@
 	<iostream>
 
 1644704537 c:\users\edonj\desktop\ice&fire\floatingblock.h
+	<windows.h>
+	<vector>
+
+1644714100 source:c:\users\eldar\documents\github\ice-fire\floatingblock.cpp
+	"floatingBlock.h"
+	<iostream>
+
+1644714100 c:\users\eldar\documents\github\ice-fire\floatingblock.h
 	<windows.h>
 	<vector>
 

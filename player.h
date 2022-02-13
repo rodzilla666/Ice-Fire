@@ -10,8 +10,8 @@ enum State { standing_right=0, standing_left, jumping_right,
 enum PlayerType { red, blue };
 
 struct Sprite {
-    HBITMAP hbm;
-    HBITMAP hbmMask;
+    HBITMAP hbm=NULL;
+    HBITMAP hbmMask=NULL;
     Sprite(HBITMAP h, HBITMAP m) : hbm{ h }, hbmMask{m} {}
     Sprite(){}
 };
