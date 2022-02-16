@@ -71,7 +71,7 @@ public:
     void Initialize() {
 
         // za main menu
-        hbmBackground = (HBITMAP)LoadImage(NULL, L"Resources\\Menus\\StartMenu.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmBackground = (HBITMAP)LoadImage(NULL, "Resources\\Menus\\StartMenu.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
         BITMAP bitmap;
         GetObject(hbmBackground, sizeof(BITMAP), &bitmap);
         background.width = bitmap.bmWidth;
@@ -237,7 +237,7 @@ public:
         if (gameState == GameOver)
         {
             gameState = Idle;
-            hbmBackground = (HBITMAP)LoadImage(NULL, L"Resources\\Menus\\GameOver.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+            hbmBackground = (HBITMAP)LoadImage(NULL, "Resources\\Menus\\GameOver.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
             HBITMAP hbmOld1 = (HBITMAP)SelectObject(hdcMem, hbmBackground);
             BitBlt(hdcBuffer, 200, 150, background.width, background.height, hdcMem, 0, 0, SRCCOPY);
             ShowGameOverScreen();
@@ -269,7 +269,7 @@ public:
     void InitializeLevel()
     {
         gameState = Level;
-        hbmBackground = (HBITMAP)LoadImage(NULL, L"Resources\\Levels\\level1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmBackground = (HBITMAP)LoadImage(NULL, "Resources\\Levels\\level1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
         BITMAP bitmap;
         GetObject(hbmBackground, sizeof(BITMAP), &bitmap);
         background.width = bitmap.bmWidth;

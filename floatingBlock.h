@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include <vector>
+#include "player.h"
 
 enum BlockType { good, goodBig,bad };
 
@@ -22,5 +23,5 @@ public:
 
     Block(int x, int y, int xmi, int xma, int ymi, int yma, int dxx, int dyy,  BlockType t);
     Block();
-    void update(HDC hdc);
+    void update(HDC hdc, Player* boy, Player* girl);
 };

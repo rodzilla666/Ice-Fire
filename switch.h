@@ -31,7 +31,7 @@ class Switch
     {
         for(auto item:blocks)
         {
-            item->update(hdc);
+            //item->update(hdc);
         }
     }
 };

@@ -32,6 +32,7 @@ public:
     int gravity=8;
     int jumping=0;
     bool standingOnWhiteBlock = true;
+    int diamondsCollected = 0;
     PlayerType type;
     State state=standing_right;
     State lastState=running_right;
@@ -46,4 +47,5 @@ public:
     void jump(HDC hdc);
     bool isJumping();
     void setState(State s);
+    void addDiamond();
 };

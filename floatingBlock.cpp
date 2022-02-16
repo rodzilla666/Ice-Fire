@@ -60,14 +60,40 @@ Block::Block() {
 }
 
 
-void Block::update(HDC hdc)
+void Block::update(HDC hdc, Player* boy, Player* girl)
 {
     x_pos += dx;
+    if(boy->standingOnWhiteBlock &&
+           ((boy->x_pos+boy->width/2-15>x_pos && boy->x_pos+boy->width/2-15<x_pos+width && boy->y_pos+boy->height>y_pos-3 && boy->y_pos+boy->height < y_pos+3) ||
+            (boy->x_pos+boy->width/2+15>x_pos && boy->x_pos+boy->width/2+15<x_pos+width && boy->y_pos+boy->height>y_pos-3 && boy->y_pos+boy->height < y_pos+3)))
+    {
+        boy->x_pos+=dx;
+    }
+
+    if(girl->standingOnWhiteBlock &&
+           ((girl->x_pos+girl->width/2-15>x_pos && girl->x_pos+girl->width/2-15<x_pos+width && girl->y_pos+girl->height>y_pos-3 && girl->y_pos+girl->height < y_pos+3) ||
+            (girl->x_pos+girl->width/2+15>x_pos && girl->x_pos+girl->width/2+15<x_pos+width && girl->y_pos+girl->height>y_pos-3 && girl->y_pos+girl->height < y_pos+3)))
+    {
+        girl->x_pos+=dx;
+    }
     if (x_pos >= xMax || x_pos<=xMin)
     {
         dx = -dx;
     }
+
     y_pos += dy;
+    if(boy->standingOnWhiteBlock &&
+           ((boy->x_pos+boy->width/2-15>x_pos && boy->x_pos+boy->width/2-15<x_pos+width && boy->y_pos+boy->height>y_pos-3 && boy->y_pos+boy->height < y_pos+3) ||
+            (boy->x_pos+boy->width/2+15>x_pos && boy->x_pos+boy->width/2+15<x_pos+width && boy->y_pos+boy->height>y_pos-3 && boy->y_pos+boy->height < y_pos+3)))
+    {
+        boy->y_pos+=dy;
+    }
+    if(girl->standingOnWhiteBlock &&
+           ((girl->x_pos+girl->width/2-15>x_pos && girl->x_pos+girl->width/2-15<x_pos+width && girl->y_pos+girl->height>y_pos-3 && girl->y_pos+girl->height < y_pos+3) ||
+            (girl->x_pos+girl->width/2+15>x_pos && girl->x_pos+girl->width/2+15<x_pos+width && girl->y_pos+girl->height>y_pos-3 && girl->y_pos+girl->height < y_pos+3)))
+    {
+        girl->y_pos+=dy;
+    }
     if (y_pos >= yMax || y_pos <= yMin)
     {
         dy = -dy;

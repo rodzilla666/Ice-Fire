@@ -73,7 +73,7 @@ void Player::update(HDC hdc){
     {
         for(int i=0; i<gravity; i++)
         {
-            COLORREF colorLeft = GetPixel(hdc, x_pos+width/2-18, y_pos+height);
+            COLORREF colorLeft = GetPixel(hdc, x_pos+width/2-15, y_pos+height);
             COLORREF colorRight = GetPixel(hdc, x_pos+width/2, y_pos+height);
             COLORREF colorUnder = GetPixel(hdc, x_pos+width/2+15, y_pos+height);
 
@@ -83,7 +83,7 @@ void Player::update(HDC hdc){
             }
             //if(colorUnder!=FLOOR)
                // cout<<colorUnder<<endl;
-            if(colorUnder == FLOOR)
+            if(colorUnder == FLOOR || colorLeft == FLOOR || colorRight == FLOOR)
             {
                 standingOnWhiteBlock = true;
             }
@@ -223,4 +223,8 @@ void Player::jump(HDC hdc){
             setState(jumping_left);
         gravityEnabled=false;
     }
+}
+
+void Player::addDiamond(){
+    diamondsCollected++;
 }

@@ -3,6 +3,8 @@
 #include "player.h"
 #include "floatingBlock.h"
 #include "switch.h"
+#include "diamonds.h"
+#include "numbers.h"
 #include <chrono>
 #include <thread>
 #include <future>
@@ -36,6 +38,11 @@ public:
     Player* girl = nullptr;
     std::vector<Block*> goodBlocks;
     std::vector<Switch*> switches;
+    std::vector<Diamonds*> diamonds;
+    Numbers* numbersBlue=nullptr;
+    Numbers* numbersRed=nullptr;
+
+    unsigned int numOfSeconds = 0;
 
     HBITMAP hbmBackground = NULL;
     HWND hwnd = NULL;
@@ -57,18 +64,44 @@ public:
     HWND playAgainButton = NULL;
     HWND mainMenuButton = NULL;
 
+    HBITMAP hbmblue;
+    HBITMAP hbmMaskblue;
+    HBITMAP hbmred;
+    HBITMAP hbmMaskred;
+    HBITMAP hbmClock;
+    HBITMAP hbmMaskClock;
+    HBITMAP hbmColon;
+    HBITMAP hbmMaskColon;
+
     bool liftPlayer = false;
 
     GameManager(HWND h) : hwnd{ h } {
         Initialize();
+        numbersBlue=new Numbers(780, 25);
+        numbersRed=new Numbers(865, 25);
     }
 
     ~GameManager() {
         delete boy;
         delete girl;
+        delete numbersBlue;
+        delete numbersRed;
+
         for (auto& item : goodBlocks)
         {
             delete item;
+        }
+
+        for (auto& item : diamonds)
+        {
+            delete item;
+        }
+    }
+
+    void addTime(){
+        if(gameState==Level)
+        {
+            numOfSeconds++;
         }
     }
 
@@ -102,6 +135,17 @@ public:
         SendMessageW(exitButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)exitButtonImage);
 
         gameState = MainMenu;
+
+        hbmblue = (HBITMAP)LoadImage(NULL, "Resources\\Diamonds\\DiamondBlueBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmMaskblue = (HBITMAP)LoadImage(NULL, "Resources\\Diamonds\\DiamondBlueWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmred = (HBITMAP)LoadImage(NULL, "Resources\\Diamonds\\DiamondRedBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmMaskred = (HBITMAP)LoadImage(NULL, "Resources\\Diamonds\\DiamondRedWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
+        hbmClock = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Numbers\\watchBlack2.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmMaskClock = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Numbers\\watchWhite2.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
+        hbmColon = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Numbers\\colonBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmMaskColon = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Numbers\\colonWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
     }
 
     void CheckInput(HDC hdc)
@@ -132,6 +176,8 @@ public:
         {
             boy->setState(standing_right);
         }
+
+////////////////////////////////////////////////////////////////
         if (KEYDOWN(VK_SPACE))
         {
             goodBlocks[1]->dy = -2;
@@ -161,7 +207,7 @@ public:
             goodBlocks[5]->dy = -1;
             liftPlayer = true;
         }
-
+/////////////////////////////////////////////////////////////////////////
 
         if (!KEYDOWN(VK_UP) && !KEYDOWN(VK_LEFT) && !KEYDOWN(VK_RIGHT))
         {
@@ -195,6 +241,7 @@ public:
     void Update()
     {
         HDC hdc = GetDC(hwnd);
+        ////////////////////////////////////////////////////////
         static bool threadMade = false;
 
         if (gameState==Level && (boy->state == dead_left || boy->state == dead_right || girl->state == dead_left || girl->state == dead_right))
@@ -207,30 +254,34 @@ public:
                 threadMade = false;
             });
         }
+        ///////////////////////////////////////////////////////////
 
         if(gameState==Level)
         {
             CheckInput(hdc);
             boy->update(hdc);
             girl->update(hdc);
+
             for (auto item : goodBlocks)
             {
-                item->update(hdc);
+                item->update(hdc, boy, girl);
             }
+
             for (auto item : switches)
             {
                 if(item->test)
                 {
                     for(auto item1 : item->blocks)
                     {
-                        item1->update(hdc);
+                       // item1->update(hdc);
                     }
 
                 }
             }
+
             if(liftPlayer)
             {
-                boy->y_pos--;
+               // boy->y_pos--;
             }
             if(goodBlocks[1]->y_pos == 220 || goodBlocks[1]->y_pos == 170)
             {
@@ -254,6 +305,20 @@ public:
                 liftPlayer = false;
             }
 
+            for(auto item: diamonds)
+            {
+                if(item->isPlayerOnDiamond(boy->x_pos, boy->y_pos, boy->width, boy->height,boy->type))
+                {
+                    item->collect();
+                    boy->addDiamond();
+                }
+                else if(item->isPlayerOnDiamond(girl->x_pos, girl->y_pos, girl->width, girl->height, girl->type))
+                {
+                    item->collect();
+                    girl->addDiamond();
+                }
+            }
+
         }
         if (gameState != Idle)
         {
@@ -274,8 +339,6 @@ public:
         HDC hdcMem = CreateCompatibleDC(hdc);
         HBITMAP hbmOld1 = (HBITMAP)SelectObject(hdcMem, hbmBackground);
         BitBlt(hdcBuffer, background.x, background.y, background.width, background.height, hdcMem, 0, 0, SRCCOPY);
-
-
 
         HBITMAP hbmOld = 0;
         if (gameState==Level || gameState == GameOver)
@@ -300,6 +363,83 @@ public:
                 hbmOld = (HBITMAP)SelectObject(hdcMem, item->hbm);
                 BitBlt(hdcBuffer, item->x_pos, item->y_pos, item->width, item->height, hdcMem, 0, 0, SRCPAINT);
             }
+            // crtaj dijamante
+            for (auto item : diamonds)
+            {
+                if(item->isCollected()==false)
+                {
+                    SelectObject(hdcMem, item->hbmMask);
+                    BitBlt(hdcBuffer, item->x_pos, item->y_pos, item->width, item->height, hdcMem, 0, 0, SRCAND);
+
+                    hbmOld = (HBITMAP)SelectObject(hdcMem, item->hbm);
+                    BitBlt(hdcBuffer, item->x_pos, item->y_pos, item->width, item->height, hdcMem, 0, 0, SRCPAINT);
+                }
+            }
+
+            // diamonds collected
+            SelectObject(hdcMem, hbmMaskblue);
+            BitBlt(hdcBuffer, 740, 30, 29, 30, hdcMem, 0, 0, SRCAND);
+
+            hbmOld = (HBITMAP)SelectObject(hdcMem, hbmblue);
+            BitBlt(hdcBuffer, 740, 30, 29, 30, hdcMem, 0, 0, SRCPAINT);
+
+            SelectObject(hdcMem, hbmMaskred);
+            BitBlt(hdcBuffer, 825, 30, 29, 30, hdcMem, 0, 0, SRCAND);
+
+            hbmOld = (HBITMAP)SelectObject(hdcMem, hbmred);
+            BitBlt(hdcBuffer, 825, 30, 29, 30, hdcMem, 0, 0, SRCPAINT);
+
+            // numbers
+            //std::cout<<boy->diamondsCollected<<std::endl;
+            SelectObject(hdcMem, numbersBlue->hbmMask);
+            BitBlt(hdcBuffer, numbersBlue->x_pos, numbersBlue->y_pos, numbersBlue->width, numbersBlue->height, hdcMem, numbersBlue->width * boy->diamondsCollected, 0, SRCAND);
+
+            hbmOld = (HBITMAP)SelectObject(hdcMem, numbersBlue->hbm);
+            BitBlt(hdcBuffer, numbersBlue->x_pos, numbersBlue->y_pos, numbersBlue->width, numbersBlue->height, hdcMem, numbersBlue->width * boy->diamondsCollected, 0, SRCPAINT);
+
+            SelectObject(hdcMem, numbersRed->hbmMask);
+            BitBlt(hdcBuffer, numbersRed->x_pos, numbersRed->y_pos, numbersRed->width, numbersRed->height, hdcMem, numbersRed->width * girl->diamondsCollected, 0, SRCAND);
+
+            hbmOld = (HBITMAP)SelectObject(hdcMem, numbersRed->hbm);
+            BitBlt(hdcBuffer, numbersRed->x_pos, numbersRed->y_pos, numbersRed->width, numbersRed->height, hdcMem, numbersRed->width * girl->diamondsCollected, 0, SRCPAINT);
+
+            // Timer
+            SelectObject(hdcMem, hbmMaskClock);
+            BitBlt(hdcBuffer, 425, 20, 40, 40, hdcMem, 0, 0, SRCAND);
+
+            hbmOld = (HBITMAP)SelectObject(hdcMem, hbmClock);
+            BitBlt(hdcBuffer, 425, 20, 40, 40, hdcMem, 0, 0, SRCPAINT);
+
+            // numbers for the timer
+
+            // minutes
+            SelectObject(hdcMem, numbersBlue->hbmMask);
+            BitBlt(hdcBuffer, 465, 25, numbersBlue->width, numbersBlue->height, hdcMem, numbersBlue->width * (numOfSeconds/60), 0, SRCAND);
+
+            hbmOld = (HBITMAP)SelectObject(hdcMem, numbersBlue->hbm);
+            BitBlt(hdcBuffer, 465, 25, numbersBlue->width, numbersBlue->height, hdcMem, numbersBlue->width * (numOfSeconds/60), 0, SRCPAINT);
+
+            // colon
+            SelectObject(hdcMem, hbmMaskColon);
+            BitBlt(hdcBuffer, 487, 25, 9, 40, hdcMem, 0, 0, SRCAND);
+
+            hbmOld = (HBITMAP)SelectObject(hdcMem, hbmColon);
+            BitBlt(hdcBuffer, 487, 25, 9, 40, hdcMem, 0, 0, SRCPAINT);
+
+            // seconds 1
+            SelectObject(hdcMem, numbersBlue->hbmMask);
+            BitBlt(hdcBuffer, 495, 25, numbersBlue->width, numbersBlue->height, hdcMem, numbersBlue->width * ((numOfSeconds%60)/10), 0, SRCAND);
+
+            hbmOld = (HBITMAP)SelectObject(hdcMem, numbersBlue->hbm);
+            BitBlt(hdcBuffer, 495, 25, numbersBlue->width, numbersBlue->height, hdcMem, numbersBlue->width * ((numOfSeconds%60)/10), 0, SRCPAINT);
+            // seconds 2
+            SelectObject(hdcMem, numbersBlue->hbmMask);
+            BitBlt(hdcBuffer, 525, 25, numbersBlue->width, numbersBlue->height, hdcMem, numbersBlue->width * ((numOfSeconds%60)%10), 0, SRCAND);
+
+            hbmOld = (HBITMAP)SelectObject(hdcMem, numbersBlue->hbm);
+            BitBlt(hdcBuffer, 525, 25, numbersBlue->width, numbersBlue->height, hdcMem, numbersBlue->width * ((numOfSeconds%60)%10), 0, SRCPAINT);
+
+
             /*for (auto item : switches)
             {
                 SelectObject(hdcMem, item->hbmMask);
@@ -356,8 +496,9 @@ public:
 
     void InitializeLevel()
     {
+        numOfSeconds=0;
         gameState = Level;
-       // hbmBackground = (HBITMAP)LoadImage(NULL, "Resources\\Levels\\level1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        //hbmBackground = (HBITMAP)LoadImage(NULL, "Resources\\Levels\\level1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
         hbmBackground = (HBITMAP)LoadImage(NULL, "Resources\\Levels\\Level2.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
         BITMAP bitmap;
         GetObject(hbmBackground, sizeof(BITMAP), &bitmap);
@@ -369,6 +510,12 @@ public:
             delete item;
         }
         goodBlocks.clear();
+
+        for (auto& item : diamonds)
+        {
+            delete item;
+        }
+        diamonds.clear();
 
         delete boy;
         delete girl;
@@ -384,6 +531,19 @@ public:
         goodBlocks.push_back(new Block(404, 385, 160, 255, 172, 505, 0, 0, goodBig));
         //switches.push_back(new Switch(100, 100));
         //switches[0]->addBlock(new Block(400, 100, 400, 490, 50, 150, 1, 0, good));
+
+        // dijamanti
+
+        diamonds.push_back(new Diamonds(675, 594, blue));
+        diamonds.push_back(new Diamonds(820, 594, blue));
+        diamonds.push_back(new Diamonds(908, 594, blue));
+        diamonds.push_back(new Diamonds(104, 132, blue));
+        diamonds.push_back(new Diamonds(186, 376, blue));
+        diamonds.push_back(new Diamonds(744, 482, red));
+        diamonds.push_back(new Diamonds(819, 482, red));
+        diamonds.push_back(new Diamonds(420, 594, red));
+        diamonds.push_back(new Diamonds(742, 282, red));
+        diamonds.push_back(new Diamonds(657, 482, red));
     }
 
     void DestroyMainMenu() {
