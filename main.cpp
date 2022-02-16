@@ -165,6 +165,12 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         break;
         }
     }
+    case MM_MCINOTIFY:
+    {
+         gameManager->playingSound = false;
+         mciSendCommand((MCIDEVICEID)lParam, MCI_CLOSE, 0, 0);
+    }
+    break;
     default:
         return DefWindowProc(hwnd, message, wParam, lParam);
     }

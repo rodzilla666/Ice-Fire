@@ -74,8 +74,10 @@ public:
     HBITMAP hbmMaskColon;
 
     bool liftPlayer = false;
+    bool playingSound = false;
 
     GameManager(HWND h) : hwnd{ h } {
+        PlaySound("gameSong.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
         Initialize();
         numbersBlue=new Numbers(780, 25);
         numbersRed=new Numbers(865, 25);
@@ -170,6 +172,12 @@ public:
         }
         if (KEYDOWN(KEY_W))
         {
+            if(!playingSound)
+            {
+                mciSendString("open jump.wav type waveaudio alias jump", NULL, 0, NULL);
+                mciSendString("play jump notify", NULL, NULL, hwnd);
+                playingSound = true;
+            }
             boy->jump(hdc);
         }
         if (KEYDOWN(KEY_S))
@@ -186,6 +194,13 @@ public:
         }
         if (KEYDOWN(VK_F1))
         {
+
+            if(!playingSound)
+            {
+                mciSendString("open lift.wav type waveaudio alias lift", NULL, 0, NULL);
+                mciSendString("play lift notify", NULL, NULL, hwnd);
+                playingSound = true;
+            }
             goodBlocks[1]->dy = 2;
             goodBlocks[2]->dy = 2;
             goodBlocks[3]->dy = 2;
@@ -229,6 +244,12 @@ public:
         }
         if (KEYDOWN(VK_UP))
         {
+            if(!playingSound)
+            {
+                mciSendString("open jump.wav type waveaudio alias jump", NULL, 0, NULL);
+                mciSendString("play jump notify", NULL, NULL, hwnd);
+                playingSound = true;
+            }
             girl->jump(hdc);
         }
 
