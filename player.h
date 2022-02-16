@@ -22,8 +22,8 @@ public:
     HBITMAP hbmMask;
     int x_pos;
     int y_pos;
-    int dy=4;
-    int dx=4;
+    int dy=5;
+    int dx=5;
     int width;
     int height;
     int x_animation=0;
@@ -31,6 +31,7 @@ public:
     bool gravityEnabled=true;
     int gravity=8;
     int jumping=0;
+    bool standingOnWhiteBlock = true;
     PlayerType type;
     State state=standing_right;
     State lastState=running_right;

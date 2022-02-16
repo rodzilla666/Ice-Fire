@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <vector>
 
-enum BlockType { good, bad };
+enum BlockType { good, goodBig,bad };
 
 class Block {
 public:

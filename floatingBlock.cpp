@@ -14,8 +14,18 @@ Block::Block(int x, int y, int xmi, int xma, int ymi, int yma, int dxx, int dyy,
     yMin = ymi;
     if (type == good)
     {
-        hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\GoodBlockBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\GoodBlockWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\GoodBlockBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\GoodBlockWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
+        BITMAP bitmap;
+        GetObject(hbm, sizeof(BITMAP), &bitmap);
+        width = bitmap.bmWidth / 1;
+        height = bitmap.bmHeight / 1;
+    }
+    else if (type == goodBig)
+    {
+        hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\GoodBlockBigBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\GoodBlockBigWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
         BITMAP bitmap;
         GetObject(hbm, sizeof(BITMAP), &bitmap);
@@ -40,8 +50,8 @@ Block::Block() {
     x_pos = 400;
     y_pos = 250;
     type = good;
-    hbm = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\GoodBlockBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-    hbmMask = (HBITMAP)LoadImage(NULL, L"Resources\\Sprites\\GoodBlockWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\GoodBlockBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    hbmMask = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\GoodBlockWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
     BITMAP bitmap;
     GetObject(hbm, sizeof(BITMAP), &bitmap);
