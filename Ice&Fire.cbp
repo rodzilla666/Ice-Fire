@@ -37,12 +37,15 @@
 			<Add library="kernel32" />
 			<Add library="comctl32" />
 		</Linker>
+		<Unit filename="diamonds.h" />
 		<Unit filename="floatingBlock.cpp" />
 		<Unit filename="floatingBlock.h" />
 		<Unit filename="gameManager.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="numbers.h" />
 		<Unit filename="player.cpp" />
 		<Unit filename="player.h" />
+		<Unit filename="switch.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

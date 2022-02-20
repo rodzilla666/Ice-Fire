@@ -195,6 +195,7 @@ void Player::moveRight(HDC hdc){
             x_pos++;
         }
     }
+
     lastState=running_right;
 }
 

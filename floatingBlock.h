@@ -19,9 +19,13 @@ public:
     int yMin;
     int width;
     int height;
+    int initdx;
+    int initdy;
     BlockType type;
+    bool isLoop=false;
 
-    Block(int x, int y, int xmi, int xma, int ymi, int yma, int dxx, int dyy,  BlockType t);
+
+    Block(int x, int y, int xmi, int xma, int ymi, int yma, int dxx, int dyy,  BlockType t, bool loop);
     Block();
     void update(HDC hdc, Player* boy, Player* girl);
 };

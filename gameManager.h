@@ -83,6 +83,7 @@ public:
         numbersRed=new Numbers(865, 25);
     }
 
+
     ~GameManager() {
         delete boy;
         delete girl;
@@ -290,40 +291,20 @@ public:
 
             for (auto item : switches)
             {
-                if(item->test)
+                if(item->isPlayerOnSwitch(boy->x_pos, boy->y_pos, boy->width, boy->height) ||
+                   item->isPlayerOnSwitch(girl->x_pos, girl->y_pos, girl->width, girl->height))
                 {
-                    for(auto item1 : item->blocks)
-                    {
-                       // item1->update(hdc);
-                    }
-
+                    item->switchDown();
                 }
-            }
+                else
+                {
+                    item->switchUp();
+                }
+                for(auto item1 : item->blocks)
+                {
+                    item1->update(hdc, boy, girl);
+                }
 
-            if(liftPlayer)
-            {
-               // boy->y_pos--;
-            }
-            if(goodBlocks[1]->y_pos == 220 || goodBlocks[1]->y_pos == 170)
-            {
-                goodBlocks[1]->dy = 0;
-            }
-            if(goodBlocks[2]->y_pos ==320 || goodBlocks[2]->y_pos == 170)
-            {
-                goodBlocks[2]->dy = 0;
-            }
-            if(goodBlocks[3]->y_pos == 420 || goodBlocks[3]->y_pos == 170)
-            {
-                goodBlocks[3]->dy = 0;
-            }
-            if(goodBlocks[4]->x_pos == 170 || goodBlocks[4]->x_pos == 338)
-            {
-                goodBlocks[4]->dx = 0;
-            }
-            if(goodBlocks[5]->y_pos == 172 || goodBlocks[5]->y_pos == 505)
-            {
-                goodBlocks[5]->dy = 0;
-                liftPlayer = false;
             }
 
             for(auto item: diamonds)
@@ -461,7 +442,7 @@ public:
             BitBlt(hdcBuffer, 525, 25, numbersBlue->width, numbersBlue->height, hdcMem, numbersBlue->width * ((numOfSeconds%60)%10), 0, SRCPAINT);
 
 
-            /*for (auto item : switches)
+            for (auto item : switches)
             {
                 SelectObject(hdcMem, item->hbmMask);
                 BitBlt(hdcBuffer, item->x_pos, item->y_pos, item->width, item->height, hdcMem, 0, 0, SRCAND);
@@ -477,9 +458,7 @@ public:
                         hbmOld = (HBITMAP)SelectObject(hdcMem, item1->hbm);
                         BitBlt(hdcBuffer, item1->x_pos, item1->y_pos, item1->width, item1->height, hdcMem, 0, 0, SRCPAINT);
                     }
-
-
-            }*/
+            }
 
         }
 
@@ -538,22 +517,42 @@ public:
         }
         diamonds.clear();
 
+        for (auto& item : switches)
+        {
+            for(auto& item1: item->blocks){
+                if(!(item->onlyUpSwitch))
+                    delete item1;
+            }
+            (item->blocks).clear();
+            delete item;
+        }
+        switches.clear();
+
         delete boy;
         delete girl;
+
+        // pocetak ucitavanja levela
 
         boy = new Player(50, 350, blue);
         girl = new Player(50, 550, red);
 
-        goodBlocks.push_back(new Block(160, 100, 160, 255, 50, 150, 1, 0, good));
-        goodBlocks.push_back(new Block(635, 170, 650, 650, 140, 220, 0, 0, goodBig));
-        goodBlocks.push_back(new Block(715, 170, 160, 255, 140, 320, 0, 0, goodBig));
-        goodBlocks.push_back(new Block(795, 170, 160, 255, 140, 420, 0, 0, goodBig));
-        goodBlocks.push_back(new Block(338, 560, 170, 338, 50, 150, 0, 0, good));
-        goodBlocks.push_back(new Block(404, 385, 160, 255, 172, 505, 0, 0, goodBig));
-        //switches.push_back(new Switch(100, 100));
-        //switches[0]->addBlock(new Block(400, 100, 400, 490, 50, 150, 1, 0, good));
+        goodBlocks.push_back(new Block(161, 100, 160, 255, 100, 100, 1, 0, good, true));
 
-        // dijamanti
+        switches.push_back(new Switch(346, 392, false, false));
+        switches[0]->addBlock(new Block(337, 560, 170, 338, 560, 560, 1, 0, good, false));
+
+        switches.push_back(new Switch(902, 501, false, false));
+        switches[1]->addBlock(new Block(404, 449, 404, 404, 172, 450, 0, 1, goodBig, false));
+
+        switches.push_back(new Switch(865, 625, true, false));
+        switches[2]->addBlock(new Block(635, 171, 650, 650, 170, 220, 0, -1, goodBig, false));
+        switches[2]->addBlock(new Block(715, 171, 650, 650, 170, 320, 0, -1, goodBig, false));
+        switches[2]->addBlock(new Block(795, 171, 650, 650, 170, 420, 0, -1, goodBig, false));
+
+        switches.push_back(new Switch(343, 150, false, true));
+        switches[3]->addBlock(switches[2]->blocks[0]);
+        switches[3]->addBlock(switches[2]->blocks[1]);
+        switches[3]->addBlock(switches[2]->blocks[2]);
 
         diamonds.push_back(new Diamonds(675, 594, blue));
         diamonds.push_back(new Diamonds(820, 594, blue));
@@ -565,6 +564,8 @@ public:
         diamonds.push_back(new Diamonds(420, 594, red));
         diamonds.push_back(new Diamonds(742, 282, red));
         diamonds.push_back(new Diamonds(657, 482, red));
+
+        // kraj ucitavanja levela
     }
 
     void DestroyMainMenu() {

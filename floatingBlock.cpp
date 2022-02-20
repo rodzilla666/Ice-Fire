@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-Block::Block(int x, int y, int xmi, int xma, int ymi, int yma, int dxx, int dyy, BlockType t) {
+Block::Block(int x, int y, int xmi, int xma, int ymi, int yma, int dxx, int dyy, BlockType t, bool loop) {
     x_pos = x;
     y_pos = y;
     xMax = xma;
@@ -12,6 +12,10 @@ Block::Block(int x, int y, int xmi, int xma, int ymi, int yma, int dxx, int dyy,
     dy = dyy;
     yMax = yma;
     yMin = ymi;
+    isLoop = loop;
+    initdx=dxx;
+    initdy=dyy;
+
     if (type == good)
     {
         hbm = (HBITMAP)LoadImage(NULL, "Resources\\Sprites\\GoodBlockBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
@@ -62,7 +66,23 @@ Block::Block() {
 
 void Block::update(HDC hdc, Player* boy, Player* girl)
 {
-    x_pos += dx;
+
+    if(x_pos>xMin && x_pos<xMax){
+        x_pos += dx;
+        //std::cout<<x_pos<<" "<<xMin<<" "<<xMax<<std::endl;
+    }
+    else if (x_pos >= xMax || x_pos<=xMin)
+    {
+        //std::cout<<"TEST "<<isLoop<<std::endl;
+        if(isLoop){
+            dx = -dx;
+            x_pos+=dx;
+        }
+        else{
+            x_pos+=(-dx);
+            dx = 0;
+        }
+    }
     if(boy->standingOnWhiteBlock &&
            ((boy->x_pos+boy->width/2-15>x_pos && boy->x_pos+boy->width/2-15<x_pos+width && boy->y_pos+boy->height>y_pos-3 && boy->y_pos+boy->height < y_pos+3) ||
             (boy->x_pos+boy->width/2+15>x_pos && boy->x_pos+boy->width/2+15<x_pos+width && boy->y_pos+boy->height>y_pos-3 && boy->y_pos+boy->height < y_pos+3)))
@@ -76,12 +96,20 @@ void Block::update(HDC hdc, Player* boy, Player* girl)
     {
         girl->x_pos+=dx;
     }
-    if (x_pos >= xMax || x_pos<=xMin)
-    {
-        dx = -dx;
-    }
 
-    y_pos += dy;
+    if(y_pos>yMin && y_pos<yMax)
+        y_pos += dy;
+    else if (y_pos >= yMax || y_pos <= yMin)
+    {
+        if(isLoop){
+            dy = -dy;
+            y_pos+=dy;
+        }
+        else{
+            y_pos+=(-dy);
+            dy = 0;
+        }
+    }
     if(boy->standingOnWhiteBlock &&
            ((boy->x_pos+boy->width/2-15>x_pos && boy->x_pos+boy->width/2-15<x_pos+width && boy->y_pos+boy->height>y_pos-3 && boy->y_pos+boy->height < y_pos+3) ||
             (boy->x_pos+boy->width/2+15>x_pos && boy->x_pos+boy->width/2+15<x_pos+width && boy->y_pos+boy->height>y_pos-3 && boy->y_pos+boy->height < y_pos+3)))
@@ -94,10 +122,7 @@ void Block::update(HDC hdc, Player* boy, Player* girl)
     {
         girl->y_pos+=dy;
     }
-    if (y_pos >= yMax || y_pos <= yMin)
-    {
-        dy = -dy;
-    }
+
 }
 
 

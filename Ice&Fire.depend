@@ -1,12 +1,12 @@
 # depslib dependency file v1.0
-1645016698 source:c:\users\eldar\documents\github\ice-fire\main.cpp
+1645042417 source:c:\users\eldar\documents\github\ice-fire\main.cpp
 	<tchar.h>
 	<windows.h>
 	<iostream>
 	"gameManager.h"
 	"player.h"
 
-1645017569 source:c:\users\eldar\documents\github\ice-fire\player.cpp
+1645042473 source:c:\users\eldar\documents\github\ice-fire\player.cpp
 	"player.h"
 	<iostream>
 
@@ -38,11 +38,11 @@
 	<vector>
 	"player.h"
 
-1645018315 source:c:\users\eldar\documents\github\ice-fire\floatingblock.cpp
+1645391249 source:c:\users\eldar\documents\github\ice-fire\floatingblock.cpp
 	"floatingBlock.h"
 	<iostream>
 
-1645018107 c:\users\eldar\documents\github\ice-fire\floatingblock.h
+1645384461 c:\users\eldar\documents\github\ice-fire\floatingblock.h
 	<windows.h>
 	<vector>
 	"player.h"
@@ -60,7 +60,7 @@
 1645019385 c:\users\edonj\desktop\ice&fire\switch.h
 	<vector>
 
-1645018141 c:\users\eldar\documents\github\ice-fire\gamemanager.h
+1645392007 c:\users\eldar\documents\github\ice-fire\gamemanager.h
 	"player.h"
 	"floatingBlock.h"
 	"switch.h"
@@ -70,7 +70,7 @@
 	<thread>
 	<future>
 
-1645018133 c:\users\eldar\documents\github\ice-fire\switch.h
+1645391632 c:\users\eldar\documents\github\ice-fire\switch.h
 	<vector>
 
 1644998122 source:c:\users\eldar\documents\github\ice-fire\gamemanager.cpp
