@@ -1,10 +1,11 @@
 # depslib dependency file v1.0
-1645042417 source:c:\users\eldar\documents\github\ice-fire\main.cpp
+1645453843 source:c:\users\eldar\documents\github\ice-fire\main.cpp
 	<tchar.h>
 	<windows.h>
 	<iostream>
 	"gameManager.h"
 	"player.h"
+	"resources.h"
 
 1645042473 source:c:\users\eldar\documents\github\ice-fire\player.cpp
 	"player.h"
@@ -101,4 +102,9 @@
 	<windows.h>
 	<vector>
 	"player.h"
+
+1645450581 source:c:\users\eldar\documents\github\ice-fire\res.rc
+	"resources.h"
+
+1645450389 c:\users\eldar\documents\github\ice-fire\resources.h
 

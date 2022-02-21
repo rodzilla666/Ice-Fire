@@ -9,6 +9,7 @@
 #include <iostream>
 #include "gameManager.h"
 #include "player.h"
+#include "resources.h"
 
 using namespace std;
 
@@ -37,9 +38,12 @@ int WINAPI WinMain(HINSTANCE hThisInstance,
     wincl.style = CS_DBLCLKS;                 /* Catch double-clicks */
     wincl.cbSize = sizeof(WNDCLASSEX);
 
-    /* Use default icon and mouse-pointer */
-    wincl.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wincl.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+    wincl.hIcon = LoadIcon (hThisInstance, MAKEINTRESOURCE(IDI_ICON));
+    wincl.hIconSm = LoadIcon (hThisInstance, MAKEINTRESOURCE(IDI_ICON));
+    //wincl.hCursor = LoadCursor (hThisInstance, MAKEINTRESOURCE(IDC_CURSOR));
+    //
+    //wincl.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    //wincl.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
     wincl.hCursor = LoadCursor(NULL, IDC_ARROW);
     wincl.lpszMenuName = NULL;                 /* No menu */
     wincl.cbClsExtra = 0;                      /* No extra bytes after the window class */
@@ -53,7 +57,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance,
     hwnd = CreateWindowEx(
         0,                   /* Extended possibilites for variation */
         szClassName,         /* Classname */
-        _T("Code::Blocks Template Windows App"),       /* Title Text */
+        _T("Ice&Fire"),       /* Title Text */
         WS_SYSMENU | WS_CAPTION, /* default window */
         CW_USEDEFAULT,       /* Windows decides the position */
         CW_USEDEFAULT,       /* where the window ends up on the screen */

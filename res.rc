@@ -1,0 +1,4 @@
+#include "resources.h"
+
+//IDC_CURSOR CURSOR "Resources\\UI\\Cursor\\fireCursor.cur"
+IDI_ICON ICON "Resources\\UI\\Icon\\iceFireIcon.ico"
