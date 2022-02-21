@@ -60,12 +60,13 @@
 1645019385 c:\users\edonj\desktop\ice&fire\switch.h
 	<vector>
 
-1645443502 c:\users\eldar\documents\github\ice-fire\gamemanager.h
+1645445425 c:\users\eldar\documents\github\ice-fire\gamemanager.h
 	"player.h"
 	"floatingBlock.h"
 	"switch.h"
 	"diamonds.h"
 	"numbers.h"
+	"box.h"
 	<chrono>
 	<thread>
 	<future>
@@ -95,4 +96,9 @@
 
 1645019385 c:\users\edonj\desktop\ice&fire\numbers.h
 	<iostream>
+
+1645449102 c:\users\eldar\documents\github\ice-fire\box.h
+	<windows.h>
+	<vector>
+	"player.h"
 

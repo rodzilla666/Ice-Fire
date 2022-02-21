@@ -5,6 +5,7 @@
 #include "switch.h"
 #include "diamonds.h"
 #include "numbers.h"
+#include "box.h"
 #include <chrono>
 #include <thread>
 #include <future>
@@ -41,6 +42,8 @@ public:
     std::vector<Block*> goodBlocks;
     std::vector<Switch*> switches;
     std::vector<Diamonds*> diamonds;
+    std::vector<Box*> boxes;
+
     Numbers* numbersBlue=nullptr;
     Numbers* numbersRed=nullptr;
 
@@ -77,6 +80,9 @@ public:
 
     bool liftPlayer = false;
     bool playingSound = false;
+
+    int delayTimer=0;
+    int delayFrames=100;
 
     GameManager(HWND h) : hwnd{ h } {
         PlaySound("gameSong.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
@@ -266,17 +272,21 @@ public:
     {
         HDC hdc = GetDC(hwnd);
         ////////////////////////////////////////////////////////
-        static bool threadMade = false;
+
 
         if (gameState==Level && (boy->state == dead_left || boy->state == dead_right || girl->state == dead_left || girl->state == dead_right))
         {
+            delayTimer++;
             // play "player died" sound
-            threadMade = true;
-            std::async(std::launch::async, [&]() {
-                std::this_thread::sleep_for(std::chrono::seconds{1});
-                gameState = GameOver;
-                threadMade = false;
-            });
+        }
+        if(delayTimer>delayFrames)
+        {
+            gameState = GameOver;
+            delayTimer = 0;
+        }
+        else if(delayTimer>0)
+        {
+            delayTimer++;
         }
         ///////////////////////////////////////////////////////////
 
@@ -287,6 +297,11 @@ public:
             girl->update(hdc);
 
             for (auto item : goodBlocks)
+            {
+                item->update(hdc, boy, girl);
+            }
+
+            for (auto item : boxes)
             {
                 item->update(hdc, boy, girl);
             }
@@ -378,6 +393,15 @@ public:
                     hbmOld = (HBITMAP)SelectObject(hdcMem, item->hbm);
                     BitBlt(hdcBuffer, item->x_pos, item->y_pos, item->width, item->height, hdcMem, 0, 0, SRCPAINT);
                 }
+            }
+            // crtaj kutije
+            for (auto item : boxes)
+            {
+                SelectObject(hdcMem, item->hbmMask);
+                BitBlt(hdcBuffer, item->x_pos, item->y_pos, item->width, item->height, hdcMem, 0, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, item->hbm);
+                BitBlt(hdcBuffer, item->x_pos, item->y_pos, item->width, item->height, hdcMem, 0, 0, SRCPAINT);
             }
 
             // diamonds collected
@@ -513,6 +537,12 @@ public:
         }
         diamonds.clear();
 
+        for (auto& item : boxes)
+        {
+            delete item;
+        }
+        boxes.clear();
+
         for (auto& item : switches)
         {
             for(auto& item1: item->blocks){
@@ -601,6 +631,13 @@ public:
             else{
                 diamonds.push_back(new Diamonds(x, y, red));
             }
+        }
+
+        int numOfBoxes;
+        input>>numOfBoxes;
+        for(int i=0; i<numOfBoxes; i++){
+            input>>x>>y;
+            boxes.push_back(new Box(x, y));
         }
 
         input.close();
