@@ -8,6 +8,8 @@
 #include <chrono>
 #include <thread>
 #include <future>
+#include <fstream>
+#include <string>
 enum GameState { Level, MainMenu, GameOver, LevelPassed, Idle };
 
 #define KEYDOWN(vk_code) ((GetKeyState(vk_code) & 0x8000) ? 1 : 0)
@@ -189,9 +191,9 @@ public:
 ////////////////////////////////////////////////////////////////
         if (KEYDOWN(VK_SPACE))
         {
-            goodBlocks[1]->dy = -2;
-            goodBlocks[2]->dy = -2;
-            goodBlocks[3]->dy = -2;
+           // goodBlocks[1]->dy = -2;
+           // goodBlocks[2]->dy = -2;
+          //  goodBlocks[3]->dy = -2;
         }
         if (KEYDOWN(VK_F1))
         {
@@ -202,26 +204,26 @@ public:
                 mciSendString("play lift notify", NULL, NULL, hwnd);
                 playingSound = true;
             }
-            goodBlocks[1]->dy = 2;
-            goodBlocks[2]->dy = 2;
-            goodBlocks[3]->dy = 2;
+         //   goodBlocks[1]->dy = 2;
+        //    goodBlocks[2]->dy = 2;
+         //   goodBlocks[3]->dy = 2;
         }
         if (KEYDOWN(VK_F2))
         {
-            goodBlocks[4]->dx = 1;
+          //  goodBlocks[4]->dx = 1;
         }
         if (KEYDOWN(VK_F3))
         {
-            goodBlocks[4]->dx = -1;
+           // goodBlocks[4]->dx = -1;
         }
         if (KEYDOWN(VK_F4))
         {
-            goodBlocks[5]->dy = 1;
+           // goodBlocks[5]->dy = 1;
         }
         if (KEYDOWN(VK_F5))
         {
-            goodBlocks[5]->dy = -1;
-            liftPlayer = true;
+           // goodBlocks[5]->dy = -1;
+           // liftPlayer = true;
         }
 /////////////////////////////////////////////////////////////////////////
 
@@ -498,12 +500,6 @@ public:
     {
         numOfSeconds=0;
         gameState = Level;
-        //hbmBackground = (HBITMAP)LoadImage(NULL, "Resources\\Levels\\level1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        hbmBackground = (HBITMAP)LoadImage(NULL, "Resources\\Levels\\Level2.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-        BITMAP bitmap;
-        GetObject(hbmBackground, sizeof(BITMAP), &bitmap);
-        background.width = bitmap.bmWidth;
-        background.height = bitmap.bmHeight;
 
         for (auto& item : goodBlocks)
         {
@@ -532,39 +528,82 @@ public:
         delete girl;
 
         // pocetak ucitavanja levela
+        std::ifstream input("Resources\\Levels\\gameInfo.txt");
+        int levelNum;
+        input>>levelNum;
+        input.close();
 
-        boy = new Player(50, 350, blue);
-        girl = new Player(50, 550, red);
+        std::string level = "Resources\\Levels\\Level"+std::to_string(levelNum)+".bmp";
+        hbmBackground = (HBITMAP)LoadImage(NULL, level.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        BITMAP bitmap;
+        GetObject(hbmBackground, sizeof(BITMAP), &bitmap);
+        background.width = bitmap.bmWidth;
+        background.height = bitmap.bmHeight;
 
-        goodBlocks.push_back(new Block(161, 100, 160, 255, 100, 100, 1, 0, good, true));
+        level = "Resources\\Levels\\level"+std::to_string(levelNum)+".txt";
+        input.open(level.c_str());
 
-        switches.push_back(new Switch(346, 392, false, false));
-        switches[0]->addBlock(new Block(337, 560, 170, 338, 560, 560, 1, 0, good, false));
+        int numOfPlayers;
+        input>>numOfPlayers;
+        int x,y;
+        int t;
+        for(int i=0; i<numOfPlayers; i++){
+            input>>x>>y>>t;
+            if(t==1)
+                boy=new Player(x,y,blue);
+            else
+                girl=new Player(x,y,red);
+        }
 
-        switches.push_back(new Switch(902, 501, false, false));
-        switches[1]->addBlock(new Block(404, 449, 404, 404, 172, 450, 0, 1, goodBig, false));
+        int numOfIndependentBlocks;
+        input>>numOfIndependentBlocks;
 
-        switches.push_back(new Switch(865, 625, true, false));
-        switches[2]->addBlock(new Block(635, 171, 650, 650, 170, 220, 0, -1, goodBig, false));
-        switches[2]->addBlock(new Block(715, 171, 650, 650, 170, 320, 0, -1, goodBig, false));
-        switches[2]->addBlock(new Block(795, 171, 650, 650, 170, 420, 0, -1, goodBig, false));
+        int xmi, xma, ymi, yma, dxx, dyy;
+        for(int i=0; i<numOfIndependentBlocks; i++){
+            input>>x>>y>>xmi>>xma>>ymi>>yma>>dxx>>dyy;
+            //std::cout<<x<<" "<<y<<" "<<xmi<< " "<<xma<<" "<<ymi<< " " <<yma<< " "<<dxx<<" "<<dyy<<std::endl;
+            goodBlocks.push_back(new Block(x, y, xmi, xma, ymi, yma, dxx, dyy, good, true));
+        }
 
-        switches.push_back(new Switch(343, 150, false, true));
-        switches[3]->addBlock(switches[2]->blocks[0]);
-        switches[3]->addBlock(switches[2]->blocks[1]);
-        switches[3]->addBlock(switches[2]->blocks[2]);
+        int numOfSwitches;
+        input>>numOfSwitches;
+        int down, up;
+        for(int i=0; i<numOfSwitches; i++){
+            input>>x>>y>>down>>up;
+            switches.push_back(new Switch(x, y, down, up));
+            int numOfBlocksInSwitch;
+            input>>numOfBlocksInSwitch;
+            if(!up){
+                for(int j=0; j<numOfBlocksInSwitch; j++){
+                    input>>x>>y>>xmi>>xma>>ymi>>yma>>dxx>>dyy>>t;
+                    if(t==1)
+                        switches[i]->addBlock(new Block(x, y, xmi, xma, ymi, yma, dxx, dyy, good, false));
+                    else
+                        switches[i]->addBlock(new Block(x, y, xmi, xma, ymi, yma, dxx, dyy, goodBig, false));
+                }
+            }
+            else{
+                int numOfComplementSwitch;
+                input>>numOfComplementSwitch;
+                for(int j=0; j<numOfBlocksInSwitch; j++){
+                    switches[i]->addBlock(switches[numOfComplementSwitch-1]->blocks[j]);
+                }
+            }
+        }
 
-        diamonds.push_back(new Diamonds(675, 594, blue));
-        diamonds.push_back(new Diamonds(820, 594, blue));
-        diamonds.push_back(new Diamonds(908, 594, blue));
-        diamonds.push_back(new Diamonds(104, 132, blue));
-        diamonds.push_back(new Diamonds(186, 376, blue));
-        diamonds.push_back(new Diamonds(744, 482, red));
-        diamonds.push_back(new Diamonds(819, 482, red));
-        diamonds.push_back(new Diamonds(420, 594, red));
-        diamonds.push_back(new Diamonds(742, 282, red));
-        diamonds.push_back(new Diamonds(657, 482, red));
+        int numOfDiamonds;
+        input>>numOfDiamonds;
+        for(int i=0; i<numOfDiamonds; i++){
+            input>>x>>y>>t;
+            if(t==1){
+                diamonds.push_back(new Diamonds(x, y, blue));
+            }
+            else{
+                diamonds.push_back(new Diamonds(x, y, red));
+            }
+        }
 
+        input.close();
         // kraj ucitavanja levela
     }
 

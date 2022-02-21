@@ -60,7 +60,7 @@
 1645019385 c:\users\edonj\desktop\ice&fire\switch.h
 	<vector>
 
-1645392007 c:\users\eldar\documents\github\ice-fire\gamemanager.h
+1645443502 c:\users\eldar\documents\github\ice-fire\gamemanager.h
 	"player.h"
 	"floatingBlock.h"
 	"switch.h"
@@ -69,8 +69,10 @@
 	<chrono>
 	<thread>
 	<future>
+	<fstream>
+	<string>
 
-1645391632 c:\users\eldar\documents\github\ice-fire\switch.h
+1645394450 c:\users\eldar\documents\github\ice-fire\switch.h
 	<vector>
 
 1644998122 source:c:\users\eldar\documents\github\ice-fire\gamemanager.cpp

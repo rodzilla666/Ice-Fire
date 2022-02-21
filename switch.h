@@ -38,10 +38,10 @@ class Switch
 
     void update(HDC hdc)
     {
-        for(auto item:blocks)
-        {
+        //for(auto item:blocks)
+       // {
             //item->update(hdc);
-        }
+      //  }
     }
 
     bool isPlayerOnSwitch(int x, int y, int w, int h)
