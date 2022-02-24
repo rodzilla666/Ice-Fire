@@ -95,7 +95,7 @@ public:
     int doorHeight;
 
     bool liftPlayer = false;
-    bool playingSound = false;
+    bool playingSound = true;
 
     int delayTimer=0;
     int delayFrames=40;
@@ -154,17 +154,17 @@ public:
         playButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 179, 275, 70, hwnd, (HMENU)PLAYBUTTON, NULL, NULL);
         SendMessageW(playButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)playButtonImage);
 
-        loginButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\LoginButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
-        loginButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 251, 275, 70, hwnd, (HMENU)LOGINBUTTON, NULL, NULL);
-        SendMessageW(loginButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)loginButtonImage);
+        //loginButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\LoginButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
+       // loginButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 251, 275, 70, hwnd, (HMENU)LOGINBUTTON, NULL, NULL);
+        //SendMessageW(loginButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)loginButtonImage);
 
-        settingsButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\SettingsButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
+        settingsButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\SoundOnOff.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
         settingsButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 327, 275, 70, hwnd, (HMENU)SETTINGSBUTTON, NULL, NULL);
         SendMessageW(settingsButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)settingsButtonImage);
 
-        leaderboardButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\LeaderboardButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
-        leaderboardButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 403, 275, 70, hwnd, (HMENU)LEADERBOARDBUTTON, NULL, NULL);
-        SendMessageW(leaderboardButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)leaderboardButtonImage);
+        //leaderboardButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\LeaderboardButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
+        //leaderboardButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 403, 275, 70, hwnd, (HMENU)LEADERBOARDBUTTON, NULL, NULL);
+        //SendMessageW(leaderboardButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)leaderboardButtonImage);
 
         exitButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\ExitButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
         exitButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 361, 479, 275, 70, hwnd, (HMENU)EXITBUTTON, NULL, NULL);
@@ -226,7 +226,7 @@ public:
         {
             if(playersMovable)
             {
-                if(boy->jump(hdc))
+                if(boy->jump(hdc) && playingSound)
                     playSound("Resources/Sounds/jump.wav", hwnd);
             }
 
@@ -266,7 +266,7 @@ public:
         {
             if(playersMovable)
             {
-                if(girl->jump(hdc))
+                if(girl->jump(hdc) && playingSound)
                     playSound("Resources/Sounds/jump.wav", hwnd);
             }
         }
@@ -285,7 +285,7 @@ public:
         if (gameState==Level && (boy->state == dead_left || boy->state == dead_right || girl->state == dead_left || girl->state == dead_right))
         {
             delayTimer++;
-            if(delayTimer==1)
+            if(delayTimer==1 && playingSound)
                 playSound("Resources/Sounds/gameOver.wav", hwnd);
         }
         if(delayTimer>delayFrames)
@@ -344,7 +344,8 @@ public:
                 {
                     item->collect();
                     boy->addDiamond();
-                    playSound("Resources/Sounds/collectcoin.wav", hwnd);
+                    if( playingSound)
+                        playSound("Resources/Sounds/collectcoin.wav", hwnd);
                     if(boy->diamondsCollected+girl->diamondsCollected==diamondGoal)
                     {
                         allDiamondsCollected=true;
@@ -354,7 +355,8 @@ public:
                 {
                     item->collect();
                     girl->addDiamond();
-                    playSound("Resources/Sounds/collectcoin.wav", hwnd);
+                    if(playingSound)
+                        playSound("Resources/Sounds/collectcoin.wav", hwnd);
                     if(boy->diamondsCollected+girl->diamondsCollected==diamondGoal)
                     {
                         allDiamondsCollected=true;
@@ -371,7 +373,7 @@ public:
             if((drawDoors || doorAnimation>0) && doorAnimation<26 && playersMovable)
             {
                 doorAnimation++;
-                if(doorAnimation==1)
+                if(doorAnimation==1 && playingSound)
                     playSound("Resources/Sounds/success.wav", hwnd);
                 if(doorAnimation>24)
                 {

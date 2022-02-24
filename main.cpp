@@ -128,28 +128,25 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         break;
         case LOGINBUTTON:
         {
-            std::cout << "LOGIN button pressed" << std::endl;
         }
         break;
         case SETTINGSBUTTON:
         {
-            std::cout << "SETTINGS button pressed" << std::endl;
+            std::cout<<"SETTINGS"<<std::endl;
+            gameManager->playingSound=!(gameManager->playingSound);
         }
         break;
         case LEADERBOARDBUTTON:
         {
-            std::cout << "LEADERBOARD button pressed" << std::endl;
         }
         break;
         case EXITBUTTON:
         {
-            std::cout << "EXIT button pressed" << std::endl;
             PostQuitMessage(0);
         }
         break;
         case PLAYAGAINBUTTON:
         {
-            std::cout << "PLAYAGAIN button pressed" << std::endl;
             KillTimer(hwnd, ID_TIMER);
 
             gameManager->ResetLevelParameters();
@@ -159,7 +156,6 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         }
         break;
         case NEXTLEVELBUTTON:
-            std::cout << "Next Level button pressed" << std::endl;
             KillTimer(hwnd, ID_TIMER);
 
             gameManager->ResetLevelParameters();
@@ -169,7 +165,6 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         break;
         case MAINMENUBUTTON:
         {
-            std::cout << "MAINMENU button pressed" << std::endl;
             KillTimer(hwnd, ID_TIMER);
             gameManager->ResetLevelParameters();
             gameManager->Initialize();
@@ -181,7 +176,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     }
     case MM_MCINOTIFY:
     {
-         gameManager->playingSound = false;
+         //gameManager->playingSound = false;
          mciSendCommand((MCIDEVICEID)lParam, MCI_CLOSE, 0, 0);
     }
     break;
