@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1645695589 source:c:\users\eldar\documents\github\ice-fire\main.cpp
+1645722068 source:c:\users\eldar\documents\github\ice-fire\main.cpp
 	<tchar.h>
 	<windows.h>
 	<iostream>
@@ -61,7 +61,7 @@
 1645019385 c:\users\edonj\desktop\ice&fire\switch.h
 	<vector>
 
-1645718616 c:\users\eldar\documents\github\ice-fire\gamemanager.h
+1645722014 c:\users\eldar\documents\github\ice-fire\gamemanager.h
 	"player.h"
 	"floatingBlock.h"
 	"switch.h"
