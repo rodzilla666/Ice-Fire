@@ -158,6 +158,15 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             SetTimer(hwnd, ID_TIMER, 1000, NULL);
         }
         break;
+        case NEXTLEVELBUTTON:
+            std::cout << "Next Level button pressed" << std::endl;
+            KillTimer(hwnd, ID_TIMER);
+
+            gameManager->ResetLevelParameters();
+            gameManager->InitializeLevel();
+            gameManager->DestroyLevelPassedMenu();
+            SetTimer(hwnd, ID_TIMER, 1000, NULL);
+        break;
         case MAINMENUBUTTON:
         {
             std::cout << "MAINMENU button pressed" << std::endl;
@@ -165,6 +174,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             gameManager->ResetLevelParameters();
             gameManager->Initialize();
             gameManager->DestroyGameOverMenu();
+            gameManager->DestroyLevelPassedMenu();
         }
         break;
         }

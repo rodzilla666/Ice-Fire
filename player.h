@@ -29,7 +29,7 @@ public:
     int x_animation=0;
     int y_animation=0;
     bool gravityEnabled=true;
-    int gravity=8;
+    int gravity=11;
     int jumping=0;
     bool standingOnWhiteBlock = true;
     int diamondsCollected = 0;
@@ -44,7 +44,7 @@ public:
     void update(HDC hdc); // animation, gravity
     void moveLeft(HDC hdc);
     void moveRight(HDC hdc);
-    void jump(HDC hdc);
+    bool jump(HDC hdc);
     bool isJumping();
     void setState(State s);
     void addDiamond();

@@ -81,8 +81,6 @@ void Player::update(HDC hdc){
             {
                 y_pos++;
             }
-            //if(colorUnder!=FLOOR)
-               // cout<<colorUnder<<endl;
             if(colorUnder == FLOOR || colorLeft == FLOOR || colorRight == FLOOR)
             {
                 standingOnWhiteBlock = true;
@@ -93,12 +91,15 @@ void Player::update(HDC hdc){
             }
             if(type==blue && colorUnder>=7930&&colorUnder<8999)
             {
-               // cout<<"LAVA"<<endl;
                setState(dead_right);
             }
             else if(type==red && colorUnder>=16252555&&colorUnder<=16509456)
             {
                setState(dead_right);
+            }
+            if(colorUnder==718602 || colorLeft == 718602 || colorRight==718602)
+            {
+                setState(dead_right);
             }
         }
     }
@@ -110,8 +111,8 @@ void Player::update(HDC hdc){
             COLORREF colorRight = GetPixel(hdc, x_pos+2*(width/4), y_pos);
             COLORREF colorAbove = GetPixel(hdc, x_pos+3*(width/4), y_pos);
 
-            if(colorLeft!=FLOOR && colorRight!=FLOOR && colorAbove!=FLOOR &&
-               colorLeft!=WALL && colorRight!=WALL && colorAbove!=WALL)
+            if((colorLeft!=FLOOR && colorRight!=FLOOR && colorAbove!=FLOOR &&
+               colorLeft!=WALL && colorRight!=WALL && colorAbove!=WALL) || y_pos<50)
             {
                 y_pos--;
             }
@@ -210,11 +211,11 @@ void Player::setState(State s){
     height=bitmap.bmHeight/1;
 }
 
-void Player::jump(HDC hdc){
-    if(state==dead_right) return;
-    COLORREF colorLeft = GetPixel(hdc, x_pos+width/4, y_pos+height);
+bool Player::jump(HDC hdc){
+    if(state==dead_right) return false;
+    COLORREF colorLeft = GetPixel(hdc, x_pos+width/4-5, y_pos+height);
     COLORREF colorRight = GetPixel(hdc, x_pos+2*(width/4), y_pos+height);
-    COLORREF colorUnder = GetPixel(hdc, x_pos+3*(width/4), y_pos+height);
+    COLORREF colorUnder = GetPixel(hdc, x_pos+3*(width/4)+5, y_pos+height);
 
     if(colorLeft==FLOOR || colorRight==FLOOR || colorUnder==FLOOR)
     {
@@ -223,7 +224,9 @@ void Player::jump(HDC hdc){
         else
             setState(jumping_left);
         gravityEnabled=false;
+        return true;
     }
+    return false;
 }
 
 void Player::addDiamond(){

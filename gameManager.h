@@ -26,6 +26,7 @@ enum GameState { Level, MainMenu, GameOver, LevelPassed, Idle };
 #define EXITBUTTON 805
 #define PLAYAGAINBUTTON 807
 #define MAINMENUBUTTON 808
+#define NEXTLEVELBUTTON 809
 
 struct Object {
 	int width;
@@ -59,6 +60,7 @@ public:
     HBITMAP exitButtonImage = NULL;
     HBITMAP playAgainButtonImage = NULL;
     HBITMAP mainMenuButtonImage = NULL;
+    HBITMAP playNextButtonImage= NULL;
 
     HWND hwndGameOverWindow = NULL;
     HWND playButton = NULL;
@@ -68,6 +70,7 @@ public:
     HWND exitButton = NULL;
     HWND playAgainButton = NULL;
     HWND mainMenuButton = NULL;
+    HWND nextLevelButton = NULL;
 
     HBITMAP hbmblue;
     HBITMAP hbmMaskblue;
@@ -78,14 +81,36 @@ public:
     HBITMAP hbmColon;
     HBITMAP hbmMaskColon;
 
+    HBITMAP hbmBlueDoor;
+    HBITMAP hbmBlueDoorMask;
+    HBITMAP hbmRedDoor;
+    HBITMAP hbmRedDoorMask;
+
+    HBITMAP hbmStar;
+    HBITMAP hbmStarMask;
+    HBITMAP hbmHalfStar;
+    HBITMAP hbmHalfStarMask;
+    int doorAnimation=0;
+    int doorWidth;
+    int doorHeight;
+
     bool liftPlayer = false;
     bool playingSound = false;
 
     int delayTimer=0;
-    int delayFrames=100;
+    int delayFrames=40;
+    int diamondGoal;
+    bool allDiamondsCollected=false;
+    bool drawDoors=false;
+    bool playersMovable=true;
+    int doorDelay=0;
+    long long unsigned int frameCounter=0;
+    bool blockSound=false;
+
+    int redDoorX, redDoorY, blueDoorX, blueDoorY;
 
     GameManager(HWND h) : hwnd{ h } {
-        PlaySound("gameSong.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+        PlaySound("Resources/Sounds/gameSong.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
         Initialize();
         numbersBlue=new Numbers(780, 25);
         numbersRed=new Numbers(865, 25);
@@ -157,6 +182,22 @@ public:
 
         hbmColon = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Numbers\\colonBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
         hbmMaskColon = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Numbers\\colonWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
+        hbmRedDoor = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Doors\\RedDoorsBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmRedDoorMask = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Doors\\RedDoorsWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
+        hbmBlueDoor = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Doors\\BlueDoorsBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmBlueDoorMask = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Doors\\BlueDoorsWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
+       // BITMAP bitmap;
+        GetObject(hbmRedDoor, sizeof(BITMAP), &bitmap);
+        doorWidth=bitmap.bmWidth/13;
+        doorHeight=bitmap.bmHeight/1;
+
+        hbmStar = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Stars\\starBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmStarMask = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Stars\\starWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmHalfStar = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Stars\\halfStarBlack.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        hbmHalfStarMask = (HBITMAP)LoadImage(NULL, "Resources\\UI\\Stars\\halfStarWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
     }
 
     void CheckInput(HDC hdc)
@@ -173,65 +214,33 @@ public:
         }
         else if (KEYDOWN(KEY_A))
         {
-            boy->moveLeft(hdc);
+            if(playersMovable)
+                boy->moveLeft(hdc);
         }
         else if (KEYDOWN(KEY_D))
         {
-            boy->moveRight(hdc);
+            if(playersMovable)
+                boy->moveRight(hdc);
         }
         if (KEYDOWN(KEY_W))
         {
-            if(!playingSound)
+            if(playersMovable)
             {
-                mciSendString("open jump.wav type waveaudio alias jump", NULL, 0, NULL);
-                mciSendString("play jump notify", NULL, NULL, hwnd);
-                playingSound = true;
+                if(boy->jump(hdc))
+                    playSound("Resources/Sounds/jump.wav", hwnd);
             }
-            boy->jump(hdc);
+
         }
         if (KEYDOWN(KEY_S))
         {
-            boy->setState(standing_right);
+            if(playersMovable)
+                boy->setState(standing_right);
         }
 
-////////////////////////////////////////////////////////////////
-        if (KEYDOWN(VK_SPACE))
-        {
-           // goodBlocks[1]->dy = -2;
-           // goodBlocks[2]->dy = -2;
-          //  goodBlocks[3]->dy = -2;
-        }
         if (KEYDOWN(VK_F1))
         {
-
-            if(!playingSound)
-            {
-                mciSendString("open lift.wav type waveaudio alias lift", NULL, 0, NULL);
-                mciSendString("play lift notify", NULL, NULL, hwnd);
-                playingSound = true;
-            }
-         //   goodBlocks[1]->dy = 2;
-        //    goodBlocks[2]->dy = 2;
-         //   goodBlocks[3]->dy = 2;
+            gameState=LevelPassed;
         }
-        if (KEYDOWN(VK_F2))
-        {
-          //  goodBlocks[4]->dx = 1;
-        }
-        if (KEYDOWN(VK_F3))
-        {
-           // goodBlocks[4]->dx = -1;
-        }
-        if (KEYDOWN(VK_F4))
-        {
-           // goodBlocks[5]->dy = 1;
-        }
-        if (KEYDOWN(VK_F5))
-        {
-           // goodBlocks[5]->dy = -1;
-           // liftPlayer = true;
-        }
-/////////////////////////////////////////////////////////////////////////
 
         if (!KEYDOWN(VK_UP) && !KEYDOWN(VK_LEFT) && !KEYDOWN(VK_RIGHT))
         {
@@ -245,21 +254,21 @@ public:
         }
         else if (KEYDOWN(VK_LEFT))
         {
-            girl->moveLeft(hdc);
+            if(playersMovable)
+                girl->moveLeft(hdc);
         }
         else if (KEYDOWN(VK_RIGHT))
         {
-            girl->moveRight(hdc);
+            if(playersMovable)
+                girl->moveRight(hdc);
         }
         if (KEYDOWN(VK_UP))
         {
-            if(!playingSound)
+            if(playersMovable)
             {
-                mciSendString("open jump.wav type waveaudio alias jump", NULL, 0, NULL);
-                mciSendString("play jump notify", NULL, NULL, hwnd);
-                playingSound = true;
+                if(girl->jump(hdc))
+                    playSound("Resources/Sounds/jump.wav", hwnd);
             }
-            girl->jump(hdc);
         }
 
         if (KEYDOWN(VK_DOWN))
@@ -270,14 +279,14 @@ public:
 
     void Update()
     {
+        frameCounter++;
         HDC hdc = GetDC(hwnd);
-        ////////////////////////////////////////////////////////
-
 
         if (gameState==Level && (boy->state == dead_left || boy->state == dead_right || girl->state == dead_left || girl->state == dead_right))
         {
             delayTimer++;
-            // play "player died" sound
+            if(delayTimer==1)
+                playSound("Resources/Sounds/gameOver.wav", hwnd);
         }
         if(delayTimer>delayFrames)
         {
@@ -288,13 +297,16 @@ public:
         {
             delayTimer++;
         }
-        ///////////////////////////////////////////////////////////
 
         if(gameState==Level)
         {
             CheckInput(hdc);
-            boy->update(hdc);
-            girl->update(hdc);
+
+            if(playersMovable)
+            {
+                boy->update(hdc);
+                girl->update(hdc);
+            }
 
             for (auto item : goodBlocks)
             {
@@ -308,10 +320,13 @@ public:
 
             for (auto item : switches)
             {
+
                 if(item->isPlayerOnSwitch(boy->x_pos, boy->y_pos, boy->width, boy->height) ||
                    item->isPlayerOnSwitch(girl->x_pos, girl->y_pos, girl->width, girl->height))
                 {
                     item->switchDown();
+                    //if(frameCounter%4==0)
+                        //playSound("Resources/Sounds/electric-fan.wav", hwnd);
                 }
                 else
                 {
@@ -321,7 +336,6 @@ public:
                 {
                     item1->update(hdc, boy, girl);
                 }
-
             }
 
             for(auto item: diamonds)
@@ -330,12 +344,69 @@ public:
                 {
                     item->collect();
                     boy->addDiamond();
+                    playSound("Resources/Sounds/collectcoin.wav", hwnd);
+                    if(boy->diamondsCollected+girl->diamondsCollected==diamondGoal)
+                    {
+                        allDiamondsCollected=true;
+                    }
                 }
                 else if(item->isPlayerOnDiamond(girl->x_pos, girl->y_pos, girl->width, girl->height, girl->type))
                 {
                     item->collect();
                     girl->addDiamond();
+                    playSound("Resources/Sounds/collectcoin.wav", hwnd);
+                    if(boy->diamondsCollected+girl->diamondsCollected==diamondGoal)
+                    {
+                        allDiamondsCollected=true;
+                    }
                 }
+            }
+
+            if(allDiamondsCollected && boy->x_pos>blueDoorX-37 && boy->x_pos<blueDoorX+37 && boy->y_pos<blueDoorY &&
+                girl->x_pos>redDoorX-37 && girl->x_pos<redDoorX+37 && girl->y_pos<redDoorY)
+            {
+                allDiamondsCollected=false;
+                drawDoors=true;
+            }
+            if((drawDoors || doorAnimation>0) && doorAnimation<26 && playersMovable)
+            {
+                doorAnimation++;
+                if(doorAnimation==1)
+                    playSound("Resources/Sounds/success.wav", hwnd);
+                if(doorAnimation>24)
+                {
+                    doorAnimation=24;
+                    playersMovable=false;
+
+                    doorDelay++;
+                }
+            }
+
+            if(!playersMovable && doorDelay>0)
+            {
+                doorDelay++;
+                if(boy->x_pos>blueDoorX-boy->width/2)
+                    boy->x_pos--;
+                if(boy->y_pos>blueDoorY-boy->height)
+                    boy->y_pos--;
+                if(boy->x_pos<blueDoorX-boy->width/2)
+                    boy->x_pos++;
+                if(boy->y_pos<blueDoorY-boy->height)
+                    boy->y_pos++;
+
+                if(girl->x_pos>redDoorX-girl->width/2)
+                    girl->x_pos--;
+                if(girl->y_pos>redDoorY-girl->height)
+                    girl->y_pos--;
+                if(girl->x_pos<redDoorX-girl->width/2)
+                    girl->x_pos++;
+                if(girl->y_pos<redDoorY-girl->height)
+                    girl->y_pos++;
+            }
+            if(doorDelay==50)
+            {
+                doorAnimation=0;
+                gameState=LevelPassed;
             }
 
         }
@@ -360,8 +431,57 @@ public:
         BitBlt(hdcBuffer, background.x, background.y, background.width, background.height, hdcMem, 0, 0, SRCCOPY);
 
         HBITMAP hbmOld = 0;
-        if (gameState==Level || gameState == GameOver)
+        if (gameState==Level || gameState == GameOver || gameState==LevelPassed)
         {
+
+            // doors
+            if(drawDoors && playersMovable)
+            {
+                // opening
+                SelectObject(hdcMem, hbmBlueDoorMask);
+                BitBlt(hdcBuffer, blueDoorX-35, blueDoorY-129, doorWidth, doorHeight, hdcMem, doorAnimation/2 * doorWidth, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmBlueDoor);
+                BitBlt(hdcBuffer, blueDoorX-35, blueDoorY-129, doorWidth, doorHeight, hdcMem, doorAnimation/2 * doorWidth, 0, SRCPAINT);
+
+                SelectObject(hdcMem, hbmRedDoorMask);
+                BitBlt(hdcBuffer, redDoorX-35, redDoorY-129, doorWidth, doorHeight, hdcMem, doorAnimation/2 * doorWidth, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmRedDoor);
+                BitBlt(hdcBuffer, redDoorX-35, redDoorY-129, doorWidth, doorHeight, hdcMem, doorAnimation/2 * doorWidth, 0, SRCPAINT);
+            }
+            else if(!drawDoors && playersMovable)
+            {
+                // closed doors
+                SelectObject(hdcMem, hbmBlueDoorMask);
+                BitBlt(hdcBuffer, blueDoorX-35, blueDoorY-129, doorWidth, doorHeight, hdcMem, 0 * doorWidth, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmBlueDoor);
+                BitBlt(hdcBuffer, blueDoorX-35, blueDoorY-129, doorWidth, doorHeight, hdcMem, 0 * doorWidth, 0, SRCPAINT);
+
+                SelectObject(hdcMem, hbmRedDoorMask);
+                BitBlt(hdcBuffer, redDoorX-35, redDoorY-129, doorWidth, doorHeight, hdcMem, 0 * doorWidth, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmRedDoor);
+                BitBlt(hdcBuffer, redDoorX-35, redDoorY-129, doorWidth, doorHeight, hdcMem, 0 * doorWidth, 0, SRCPAINT);
+            }
+
+            if(drawDoors && !playersMovable)
+            {
+                // open doors
+                SelectObject(hdcMem, hbmBlueDoorMask);
+                BitBlt(hdcBuffer, blueDoorX-35, blueDoorY-129, doorWidth, doorHeight, hdcMem, 12 * doorWidth, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmBlueDoor);
+                BitBlt(hdcBuffer, blueDoorX-35, blueDoorY-129, doorWidth, doorHeight, hdcMem, 12 * doorWidth, 0, SRCPAINT);
+
+                SelectObject(hdcMem, hbmRedDoorMask);
+                BitBlt(hdcBuffer, redDoorX-35, redDoorY-129, doorWidth, doorHeight, hdcMem, 12 * doorWidth, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmRedDoor);
+                BitBlt(hdcBuffer, redDoorX-35, redDoorY-129, doorWidth, doorHeight, hdcMem, 12 * doorWidth, 0, SRCPAINT);
+            }
+
             SelectObject(hdcMem, boy->hbmMask);
             BitBlt(hdcBuffer, boy->x_pos, boy->y_pos, boy->width, boy->height, hdcMem, boy->x_animation * boy->width, boy->y_animation * boy->height, SRCAND);
 
@@ -373,6 +493,8 @@ public:
 
             hbmOld = (HBITMAP)SelectObject(hdcMem, girl->hbm);
             BitBlt(hdcBuffer, girl->x_pos, girl->y_pos, girl->width, girl->height, hdcMem, girl->x_animation * girl->width, girl->y_animation * girl->height, SRCPAINT);
+
+
 
             for (auto item : goodBlocks)
             {
@@ -485,7 +607,6 @@ public:
                         BitBlt(hdcBuffer, item1->x_pos, item1->y_pos, item1->width, item1->height, hdcMem, 0, 0, SRCPAINT);
                     }
             }
-
         }
 
         if (gameState == GameOver)
@@ -496,6 +617,71 @@ public:
             BitBlt(hdcBuffer, 200, 150, background.width, background.height, hdcMem, 0, 0, SRCCOPY);
             ShowGameOverScreen();
         }
+
+        if (gameState == LevelPassed)
+        {
+            gameState = Idle;
+            hbmBackground = (HBITMAP)LoadImage(NULL, "Resources\\Menus\\LevelPassed.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+            HBITMAP hbmOld1 = (HBITMAP)SelectObject(hdcMem, hbmBackground);
+            BitBlt(hdcBuffer, 200, 150, background.width, background.height, hdcMem, 0, 0, SRCCOPY);
+            completeLevel();
+            ShowLevelPassedScreen();
+           // numOfSeconds=107;
+            // stars
+            if(numOfSeconds<=80)
+            {
+                SelectObject(hdcMem, hbmHalfStarMask);
+                BitBlt(hdcBuffer, 540, 240, 80, 80, hdcMem, 0, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmHalfStar);
+                BitBlt(hdcBuffer, 540, 240, 80, 80, hdcMem, 0, 0, SRCPAINT);
+            }
+            if(numOfSeconds<=60)
+            {
+                SelectObject(hdcMem, hbmStarMask);
+                BitBlt(hdcBuffer, 540, 240, 80, 80, hdcMem, 0, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmStar);
+                BitBlt(hdcBuffer, 540, 240, 80, 80, hdcMem, 0, 0, SRCPAINT);
+            }
+
+            if(numOfSeconds<=120)
+            {
+                SelectObject(hdcMem, hbmHalfStarMask);
+                BitBlt(hdcBuffer, 460, 240, 80, 80, hdcMem, 0, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmHalfStar);
+                BitBlt(hdcBuffer, 460, 240, 80, 80, hdcMem, 0, 0, SRCPAINT);
+            }
+            if(numOfSeconds<=100)
+            {
+                SelectObject(hdcMem, hbmStarMask);
+                BitBlt(hdcBuffer, 460, 240, 80, 80, hdcMem, 0, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmStar);
+                BitBlt(hdcBuffer, 460, 240, 80, 80, hdcMem, 0, 0, SRCPAINT);
+            }
+
+            if(numOfSeconds<=160)
+            {
+                SelectObject(hdcMem, hbmHalfStarMask);
+                BitBlt(hdcBuffer, 380, 240, 80, 80, hdcMem, 0, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmHalfStar);
+                BitBlt(hdcBuffer, 380, 240, 80, 80, hdcMem, 0, 0, SRCPAINT);
+            }
+            if(numOfSeconds<=140)
+            {
+                SelectObject(hdcMem, hbmStarMask);
+                BitBlt(hdcBuffer, 380, 240, 80, 80, hdcMem, 0, 0, SRCAND);
+
+                hbmOld = (HBITMAP)SelectObject(hdcMem, hbmStar);
+                BitBlt(hdcBuffer, 380, 240, 80, 80, hdcMem, 0, 0, SRCPAINT);
+            }
+
+
+        }
+
         SelectObject(hdc, hbmOld1);
 
         BitBlt(hdc, 0, 0, rect->right, rect->bottom, hdcBuffer, 0, 0, SRCCOPY);
@@ -509,6 +695,35 @@ public:
         DeleteObject(hbmOldBuffer);
     }
 
+    void completeLevel()
+    {
+        std::ifstream input("Resources\\Levels\\gameInfo.txt");
+        int levelNum;
+        input>>levelNum;
+        input.close();
+
+        levelNum++;
+
+        if(levelNum>3)
+            levelNum=1;
+
+        std::ofstream output("Resources\\Levels\\gameInfo.txt");
+        output<<levelNum;
+        output.close();
+    }
+
+    void playSound(char* filename, HWND hwnd)
+    {
+        static long id = 1;
+        char cmd[300];
+        char name[20];
+        sprintf(name, "mydev%d",(int) ++id);
+        sprintf(cmd, "open %s type waveaudio alias %s", filename, name);
+        mciSendString(cmd, NULL, NULL, NULL);
+        sprintf(cmd, "play %s notify", name);
+        mciSendString(cmd, NULL, NULL, hwnd);
+    }
+
     void ShowGameOverScreen()
     {
         playAgainButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\PlayAgainButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
@@ -520,10 +735,26 @@ public:
         SendMessageW(mainMenuButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)mainMenuButtonImage);
     }
 
+    void ShowLevelPassedScreen()
+    {
+        playNextButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\NextLevelButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
+        nextLevelButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 360, 340, 275, 70, hwnd, (HMENU)NEXTLEVELBUTTON, NULL, NULL);
+        SendMessageW(nextLevelButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)playNextButtonImage);
+
+        mainMenuButtonImage = (HBITMAP)LoadImageW(NULL, L"Resources\\UI\\Buttons\\MainMenuButton.bmp", IMAGE_BITMAP, 275, 70, LR_LOADFROMFILE);
+        mainMenuButton = CreateWindowW(L"BUTTON", NULL, WS_VISIBLE | WS_CHILD | BS_BITMAP, 360, 420, 275, 70, hwnd, (HMENU)MAINMENUBUTTON, NULL, NULL);
+        SendMessageW(mainMenuButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)mainMenuButtonImage);
+    }
+
     void InitializeLevel()
     {
         numOfSeconds=0;
         gameState = Level;
+        allDiamondsCollected=false;
+        doorAnimation=0;
+        drawDoors=false;
+        playersMovable=true;
+        doorDelay=0;
 
         for (auto& item : goodBlocks)
         {
@@ -591,7 +822,6 @@ public:
         int xmi, xma, ymi, yma, dxx, dyy;
         for(int i=0; i<numOfIndependentBlocks; i++){
             input>>x>>y>>xmi>>xma>>ymi>>yma>>dxx>>dyy;
-            //std::cout<<x<<" "<<y<<" "<<xmi<< " "<<xma<<" "<<ymi<< " " <<yma<< " "<<dxx<<" "<<dyy<<std::endl;
             goodBlocks.push_back(new Block(x, y, xmi, xma, ymi, yma, dxx, dyy, good, true));
         }
 
@@ -623,6 +853,8 @@ public:
 
         int numOfDiamonds;
         input>>numOfDiamonds;
+        diamondGoal=numOfDiamonds;
+
         for(int i=0; i<numOfDiamonds; i++){
             input>>x>>y>>t;
             if(t==1){
@@ -640,6 +872,8 @@ public:
             boxes.push_back(new Box(x, y));
         }
 
+        input>>blueDoorX>>blueDoorY>>redDoorX>>redDoorY;
+
         input.close();
         // kraj ucitavanja levela
     }
@@ -654,7 +888,6 @@ public:
 
     void ResetLevelParameters()
     {
-        //boy->x_pos = initX;
         boy->x_pos = 30;
         boy->y_pos = 0;
         girl->x_pos = 5;
@@ -666,5 +899,14 @@ public:
     void DestroyGameOverMenu() {
         DestroyWindow(playAgainButton);
         DestroyWindow(mainMenuButton);
+        mainMenuButton=NULL;
+        playAgainButton=NULL;
+    }
+
+    void DestroyLevelPassedMenu() {
+        DestroyWindow(nextLevelButton);
+        DestroyWindow(mainMenuButton);
+        nextLevelButton=NULL;
+        mainMenuButton=NULL;
     }
 };
